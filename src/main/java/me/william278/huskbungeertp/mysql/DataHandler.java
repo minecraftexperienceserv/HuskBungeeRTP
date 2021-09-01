@@ -77,16 +77,18 @@ public class DataHandler {
     /*
     Not thread safe, perform inside a RunTaskAsynchronously!
      */
-    public static boolean isPlayerOnCoolDown(UUID uuid, Group group) {
+    public static CoolDownResponse getPlayerCoolDown(UUID uuid, Group group) {
         boolean isPlayerOnCoolDown = false;
+        long coolDownTimeLeft = 0L;
         Connection connection = getConnection();
         try(PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT * FROM " + group.getGroupDatabaseTableName() + " WHERE `player_id`=(SELECT `id` FROM " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " WHERE `user_uuid`=? LIMIT 1) LIMIT 1;")) {
             preparedStatement.setString(1, uuid.toString());
             final ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                Date lastRtpDate = resultSet.getDate("last_rtp");
-                if (Instant.now().getEpochSecond() >= lastRtpDate.toInstant().getEpochSecond() + (60L * group.coolDownTimeMinutes())) {
+                Timestamp lastRtpTimestamp = resultSet.getTimestamp("last_rtp");
+                coolDownTimeLeft = lastRtpTimestamp.toInstant().getEpochSecond() + (60L * group.coolDownTimeMinutes()) - Instant.now().getEpochSecond();
+                if (coolDownTimeLeft <= 0) {
                     try(PreparedStatement deletePlayerCoolDownStatement = connection.prepareStatement(
                             "DELETE FROM " + group.getGroupDatabaseTableName() + " WHERE `player_id`=(SELECT `id` FROM " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " WHERE `user_uuid`=? LIMIT 1) LIMIT 1;")) {
                         deletePlayerCoolDownStatement.setString(1, uuid.toString());
@@ -99,20 +101,22 @@ public class DataHandler {
         } catch (SQLException e) {
             plugin.getLogger().log(Level.SEVERE, "An SQL exception has occurred", e);
         }
-        return isPlayerOnCoolDown;
+        return new CoolDownResponse(isPlayerOnCoolDown, coolDownTimeLeft);
     }
 
     public static void setPlayerOnCoolDown(UUID uuid, Group group) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
            Connection connection = getConnection();
            try(PreparedStatement preparedStatement = connection.prepareStatement(
-                   "INSERT INTO " + group.getGroupDatabaseTableName() + " (`player_id`) VALUES (SELECT `id` FROM + " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " WHERE `user_uuid`=? LIMIT 1);")) {
+                   "INSERT INTO " + group.getGroupDatabaseTableName() + " (`player_id`) SELECT `id` FROM " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " WHERE `user_uuid`=? LIMIT 1;")) {
                preparedStatement.setString(1, uuid.toString());
-               preparedStatement.executeUpdate();
+               preparedStatement.execute();
            } catch (SQLException e) {
                plugin.getLogger().log(Level.SEVERE, "An SQL exception has occurred", e);
            }
         });
     }
+
+    public record CoolDownResponse(boolean isInCoolDown, long timeLeft) { }
 
 }

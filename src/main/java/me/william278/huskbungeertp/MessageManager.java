@@ -78,7 +78,7 @@ public class MessageManager {
     }
 
     // Send a message to the correct channel
-    private static void sendMessage(CommandSender sender, String messageID, String... placeholderReplacements) {
+    public static void sendMessage(CommandSender sender, String messageID, String... placeholderReplacements) {
         String message = getRawMessage(messageID);
 
         // Don't send empty messages

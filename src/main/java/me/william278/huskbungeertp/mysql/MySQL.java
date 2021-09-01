@@ -60,7 +60,7 @@ public class MySQL extends Database {
             for (Group group : HuskBungeeRTP.getSettings().getGroups()) {
                 tableCreationStatement.execute("CREATE TABLE IF NOT EXISTS " + group.getGroupDatabaseTableName() + " ("
                         + "`player_id` integer AUTO_INCREMENT PRIMARY KEY,"
-                        + "`last_rtp` date NOT NULL DEFAULT (CURRENT_DATE)"
+                        + "`last_rtp` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP)"
                         + ");");
             }
         } catch (SQLException e) {
@@ -68,4 +68,6 @@ public class MySQL extends Database {
         }
         initialize();
     }
+
+
 }

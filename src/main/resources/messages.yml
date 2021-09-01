@@ -1,3 +1,3 @@
 error_console_player_specify: '[Error:](#ff3300) [You must specify a player to randomly teleport.](#ff7e5e)'
-error_cooldown: '[Error:](#ff3300) [Random teleportation is still on cooldown! Try again later!](#ff7e5e)'
-processing_rtp: '[Randomly teleporting...](gray)'
+error_cooldown: '[Error:](#ff3300) [You must wait %1% seconds before randomly teleporting again.](#ff7e5e)'
+processing_rtp: '[Finding a safe place to teleport you...](gray)'
