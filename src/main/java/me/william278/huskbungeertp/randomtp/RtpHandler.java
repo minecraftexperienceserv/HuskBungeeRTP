@@ -25,7 +25,11 @@ public class RtpHandler {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             final DataHandler.CoolDownResponse coolDownResponse = DataHandler.getPlayerCoolDown(player.getUniqueId(), profile.getDestinationGroup());
             if (coolDownResponse.isInCoolDown() && !player.hasPermission("huskrtp.bypass_cooldown")) {
-                MessageManager.sendMessage(player, "error_cooldown", Long.toString(coolDownResponse.timeLeft()));
+                if (coolDownResponse.timeLeft() <= 60) {
+                    MessageManager.sendMessage(player, "error_cooldown_seconds", Long.toString(coolDownResponse.timeLeft()));
+                } else {
+                    MessageManager.sendMessage(player, "error_cooldown_minutes", Integer.toString((int) (coolDownResponse.timeLeft() / 60)));
+                }
                 return;
             }
 

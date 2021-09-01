@@ -15,7 +15,7 @@ use_plan: false
 groups:
   group1:
     table_name: huskrtp_group_1
-    cooldown_minutes: 480
+    cooldown_minutes: 6
     servers_worlds:
       server1:
         - world
@@ -25,7 +25,7 @@ groups:
         - worldgen2
   group2:
     table_name: huskrtp_group_2
-    cooldown_minutes: 360
+    cooldown_minutes: 3
     servers_worlds:
       server3:
         - worldcustomgen
