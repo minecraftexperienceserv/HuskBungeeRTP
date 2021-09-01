@@ -1,0 +1,30 @@
+mysql_credentials:
+  host: localhost
+  port: 3306
+  username: root
+  password: pa55w0rd
+  database: huskrtp
+  params: '?autoReconnect=true&useSSL=false'
+  player_table_name: huskrtp_players
+redis_credentials:
+  host: localhost
+  port: 6379
+average_player_count_days: 7
+this_server_id: server1
+groups:
+  group1:
+    table_name: huskrtp_group_1
+    cooldown_minutes: 480
+    servers_worlds:
+      server1:
+        - world
+        - worldcustomgen
+      server2:
+        - world
+        - worldgen2
+  group2:
+    table_name: huskrtp_group_2
+    cooldown_minutes: 360
+    servers_worlds:
+      server3:
+        - worldcustomgen

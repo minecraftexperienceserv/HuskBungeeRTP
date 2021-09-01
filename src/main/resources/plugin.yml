@@ -1,0 +1,13 @@
+name: HuskBungeeRTP
+version: ${project.version}
+main: me.william278.huskbungeertp.HuskBungeeRTP
+api-version: 1.17
+authors: [William278]
+website: ${project.url}
+description: Randomly teleport across worlds and servers!
+depend:
+  - HuskHomes
+softdepend:
+  - JakesRTP
+  - PlayerAnalytics
+  - HuskTowns
