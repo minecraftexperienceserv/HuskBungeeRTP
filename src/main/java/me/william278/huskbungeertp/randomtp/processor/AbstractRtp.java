@@ -5,5 +5,6 @@ import org.bukkit.World;
 
 public abstract class AbstractRtp {
 
+    public abstract void initialize();
     public abstract Location getRandomLocation(World world);
 }

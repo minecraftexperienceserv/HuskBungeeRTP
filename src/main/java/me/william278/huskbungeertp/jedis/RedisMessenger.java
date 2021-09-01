@@ -22,7 +22,6 @@ public class RedisMessenger {
         new Thread(() -> jedis.subscribe(new JedisPubSub() {
             @Override
             public void onMessage(String channel, String message) {
-                Bukkit.getLogger().info("Got message! " + message);
                 if (!channel.equals(REDIS_CHANNEL)) {
                     return;
                 }

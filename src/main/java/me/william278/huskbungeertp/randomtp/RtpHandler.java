@@ -51,6 +51,7 @@ public class RtpHandler {
     }
 
     private static Group.Server determineTargetServer(HashSet<Group.Server> servers) {
+        // todo PlanIntegration!
         final ArrayList<Group.Server> shuffledServers = new ArrayList<>(servers);
         Collections.shuffle(shuffledServers);
         return shuffledServers.get(0);

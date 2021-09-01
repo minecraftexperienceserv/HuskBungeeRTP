@@ -25,6 +25,9 @@ public class DefaultRtp extends AbstractRtp {
     public static final int RADIUS = 5000;
 
     @Override
+    public void initialize() {}
+
+    @Override
     public Location getRandomLocation(World world) {
         for (int i = 0; i < MAX_RANDOM_ATTEMPTS; i++) {
             Location randomLocation = randomLocation(world);

@@ -36,6 +36,7 @@ public final class HuskBungeeRTP extends JavaPlugin {
         } else {
             abstractRtp = new DefaultRtp();
         }
+        abstractRtp.initialize();
     }
 
     @Override
