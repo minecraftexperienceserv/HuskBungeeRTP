@@ -2,12 +2,29 @@ name: HuskBungeeRTP
 version: ${project.version}
 main: me.william278.huskbungeertp.HuskBungeeRTP
 api-version: 1.17
-authors: [William278]
+authors: [ William278 ]
 website: ${project.url}
-description: Randomly teleport across worlds and servers!
+description: ${project.description}
 depend:
   - HuskHomes
 softdepend:
   - JakesRTP
   - PlayerAnalytics
-  - HuskTowns
+
+commands:
+  rtp:
+    usage: /rtp [player] [destination_group] [biome]
+    description: Randomly teleport a player
+    permission: huskrtp.command.rtp
+permissions:
+  huskrtp.*:
+    description: Lets you use all HuskBungeeRTP commands
+    default: op
+    children:
+      - huskrtp.command.rtp
+  huskrtp.command.rtp:
+    description: Lets you randomly teleport
+    default: op
+  huskrtp.bypass_cooldown:
+    description: Lets you bypass all rtp cooldown times
+    default: false

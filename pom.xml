@@ -53,6 +53,14 @@
                                     <pattern>redis.clients.jedis</pattern>
                                     <shadedPattern>me.william278.huskbungeertp.libraries.jedis</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>de.themoep.minedown</pattern>
+                                    <shadedPattern>me.william278.huskbungeertp.libraries.minedown</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>io.papermc.lib</pattern>
+                                    <shadedPattern>me.william278.huskbungeertp.libraries.paperlib</shadedPattern>
+                                </relocation>
                             </relocations>
                         </configuration>
                     </execution>
@@ -76,6 +84,18 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>minebench-repo</id>
+            <url>https://repo.minebench.de/</url>
+        </repository>
+        <repository>
+            <id>papermc</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -98,6 +118,24 @@
             <version>0.14.3</version>
             <scope>system</scope>
             <systemPath>E:/William/Documents/Minecraft/Dependency Jars/JakesRTP-v0.14.3.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>de.themoep</groupId>
+            <artifactId>minedown</artifactId>
+            <version>1.7.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.papermc</groupId>
+            <artifactId>paperlib</artifactId>
+            <version>1.0.6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.WiIIiam278</groupId>
+            <artifactId>HuskHomes2</artifactId>
+            <version>2.8.2</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

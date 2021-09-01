@@ -1,4 +1,4 @@
-package me.william278.huskbungeertp.randomtp;
+package me.william278.huskbungeertp.randomtp.processor;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,9 +23,6 @@ public class DefaultRtp extends AbstractRtp {
     // Maximum number of attempts to find a random location
     private static final int MAX_RANDOM_ATTEMPTS = 8;
     public static final int RADIUS = 5000;
-
-    @Override
-    public void initialize() {}
 
     @Override
     public Location getRandomLocation(World world) {

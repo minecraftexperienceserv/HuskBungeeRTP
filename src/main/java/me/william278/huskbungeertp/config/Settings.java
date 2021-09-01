@@ -22,6 +22,7 @@ public class Settings {
     // General options
     private final int averagePlayerCountDays;
     private final String serverId;
+    private final boolean usePlan;
 
     // Group configuration
     private final HashSet<Group> groups;
@@ -40,6 +41,7 @@ public class Settings {
 
         averagePlayerCountDays = config.getInt("average_player_count_days", 7);
         serverId = config.getString("this_server_id", "server1");
+        usePlan = config.getBoolean("use_plan", false);
 
         groups = getGroups(config);
     }
@@ -50,7 +52,7 @@ public class Settings {
             final String tableName = config.getString("groups." + groupId + ".table_name");
             final int coolDownMinutes = config.getInt("groups." + groupId + ".cooldown_minutes");
             final HashSet<Group.Server> servers = getGroupServers(config, groupId);
-            groups.add(new Group(tableName, coolDownMinutes, servers));
+            groups.add(new Group(groupId, tableName, coolDownMinutes, servers));
         }
         return groups;
     }
@@ -98,6 +100,10 @@ public class Settings {
 
     public int getRedisPort() {
         return redisPort;
+    }
+
+    public boolean isUsePlan() {
+        return usePlan;
     }
 
     public int getAveragePlayerCountDays() {

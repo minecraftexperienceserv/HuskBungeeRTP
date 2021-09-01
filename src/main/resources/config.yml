@@ -11,6 +11,7 @@ redis_credentials:
   port: 6379
 average_player_count_days: 7
 this_server_id: server1
+use_plan: false
 groups:
   group1:
     table_name: huskrtp_group_1

@@ -51,7 +51,7 @@ public class MySQL extends Database {
         try(Statement tableCreationStatement = connection.createStatement()) {
             // Create player table statement
             tableCreationStatement.execute("CREATE TABLE IF NOT EXISTS " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " ("
-                    + "`id` integer AUTO_INCREMENT,"
+                    + "`id` integer AUTO_INCREMENT PRIMARY KEY,"
                     + "`user_uuid` char(36) NOT NULL UNIQUE,"
                     + "`is_performing_rtp` boolean NOT NULL DEFAULT FALSE"
                     + ");");
@@ -59,8 +59,8 @@ public class MySQL extends Database {
             // Create group cool-down tables
             for (Group group : HuskBungeeRTP.getSettings().getGroups()) {
                 tableCreationStatement.execute("CREATE TABLE IF NOT EXISTS " + group.getGroupDatabaseTableName() + " ("
-                        + "`player_id` integer AUTO_INCREMENT,"
-                        + "`last_rtp` date NOT NULL DEFAULT (CURRENT_DATE),"
+                        + "`player_id` integer AUTO_INCREMENT PRIMARY KEY,"
+                        + "`last_rtp` date NOT NULL DEFAULT (CURRENT_DATE)"
                         + ");");
             }
         } catch (SQLException e) {
