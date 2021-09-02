@@ -70,10 +70,14 @@ public final class HuskBungeeRTP extends JavaPlugin {
 
         // Jedis subscriber initialisation
         RedisMessenger.subscribe();
+
+        // Log to console
+        getLogger().info("Successfully enabled HuskBungeeRTP v" + getDescription().getVersion());
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        getLogger().info("Disabled HuskBungeeRTP v" + getDescription().getVersion());
     }
 }

@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class RedisMessenger {

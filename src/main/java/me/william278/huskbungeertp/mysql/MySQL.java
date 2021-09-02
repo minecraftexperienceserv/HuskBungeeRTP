@@ -47,6 +47,7 @@ public class MySQL extends Database {
 
     @Override
     public void load() {
+        plugin.getLogger().info("Establishing connection to the mySQL Database...");
         connection = getConnection();
         try(Statement tableCreationStatement = connection.createStatement()) {
             // Create player table statement
@@ -69,6 +70,8 @@ public class MySQL extends Database {
             }
         } catch (SQLException e) {
             plugin.getLogger().log(Level.SEVERE, "An error occurred creating tables: ", e);
+        } finally {
+            plugin.getLogger().info("Successfully initialized mySQL Database connection.");
         }
         initialize();
     }
