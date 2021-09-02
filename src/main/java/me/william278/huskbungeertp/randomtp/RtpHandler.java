@@ -15,16 +15,20 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.UUID;
 
 public class RtpHandler {
 
     private static final HuskBungeeRTP plugin = HuskBungeeRTP.getInstance();
 
     public static void processRtp(Player player, RtpProfile profile) {
+        final UUID uuid = player.getUniqueId();
+        final boolean canBypassCoolDown = player.hasPermission("huskrtp.bypass_cooldown");
+
         MessageManager.sendMessage(player, "processing_rtp");
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             final DataHandler.CoolDownResponse coolDownResponse = DataHandler.getPlayerCoolDown(player.getUniqueId(), profile.getDestinationGroup());
-            if (coolDownResponse.isInCoolDown() && !player.hasPermission("huskrtp.bypass_cooldown")) {
+            if (coolDownResponse.isInCoolDown() && !canBypassCoolDown) {
                 if (coolDownResponse.timeLeft() <= 60) {
                     MessageManager.sendMessage(player, "error_cooldown_seconds", Long.toString(coolDownResponse.timeLeft()));
                 } else {
@@ -47,11 +51,13 @@ public class RtpHandler {
             } else {
                 // Cross server RTP time!
                 RedisMessenger.publish(new RedisMessage(targetServer.getName(), RedisMessage.RedisMessageType.REQUEST_RANDOM_LOCATION,
-                        player.getUniqueId() + "#" + HuskBungeeRTP.getSettings().getServerId() + "#" + targetWorld + "#" + "TARGET_BIOME")); //todo target biome!
+                        uuid + "#" + HuskBungeeRTP.getSettings().getServerId() + "#" + targetWorld + "#" + "TARGET_BIOME")); //todo target biome!
             }
 
             // Apply cool down
-            DataHandler.setPlayerOnCoolDown(player.getUniqueId(), profile.getDestinationGroup());
+            if (!canBypassCoolDown) {
+                DataHandler.setPlayerOnCoolDown(uuid, profile.getDestinationGroup());
+            }
         });
     }
 

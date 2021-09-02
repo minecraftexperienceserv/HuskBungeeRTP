@@ -13,7 +13,11 @@ public class DataHandler {
 
     private static HuskBungeeRTP plugin;
     private static Database database;
-    private static Connection getConnection() { return database.getConnection(); }
+
+    private static Connection getConnection() {
+        return database.getConnection();
+    }
+
     public static void loadDatabase(HuskBungeeRTP instance) {
         database = new MySQL(instance);
         database.load();
@@ -23,13 +27,13 @@ public class DataHandler {
     public static void addPlayerIfNotExist(UUID uuid) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             Connection connection = getConnection();
-            try(PreparedStatement checkIfPlayerExist = connection.prepareStatement(
+            try (PreparedStatement checkIfPlayerExist = connection.prepareStatement(
                     "SELECT * FROM " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " WHERE `user_uuid`=? LIMIT 1;")) {
                 checkIfPlayerExist.setString(1, uuid.toString());
                 final ResultSet playerExistResultSet = checkIfPlayerExist.executeQuery();
                 // If the player does not exist yet
                 if (!playerExistResultSet.next()) {
-                    try(PreparedStatement createPlayerStatement = connection.prepareStatement(
+                    try (PreparedStatement createPlayerStatement = connection.prepareStatement(
                             "INSERT INTO " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " (`user_uuid`) VALUES (?)")) {
                         createPlayerStatement.setString(1, uuid.toString());
                         createPlayerStatement.executeUpdate();
@@ -47,7 +51,7 @@ public class DataHandler {
     public static boolean getPlayerTeleporting(UUID uuid) {
         boolean isPlayerTeleporting = false;
         Connection connection = getConnection();
-        try(PreparedStatement preparedStatement = connection.prepareStatement(
+        try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT * FROM " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " WHERE `user_uuid`=? LIMIT 1;")) {
             preparedStatement.setString(1, uuid.toString());
             final ResultSet resultSet = preparedStatement.executeQuery();
@@ -63,7 +67,7 @@ public class DataHandler {
     public static void setPlayerTeleporting(UUID uuid, boolean teleporting) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             Connection connection = getConnection();
-            try(PreparedStatement preparedStatement = connection.prepareStatement(
+            try (PreparedStatement preparedStatement = connection.prepareStatement(
                     "UPDATE " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " SET `is_performing_rtp`=? WHERE `user_uuid`=? LIMIT 1;")) {
                 preparedStatement.setBoolean(1, teleporting);
                 preparedStatement.setString(2, uuid.toString());
@@ -81,7 +85,7 @@ public class DataHandler {
         boolean isPlayerOnCoolDown = false;
         long coolDownTimeLeft = 0L;
         Connection connection = getConnection();
-        try(PreparedStatement preparedStatement = connection.prepareStatement(
+        try (PreparedStatement preparedStatement = connection.prepareStatement(
                 "SELECT * FROM " + group.getGroupDatabaseTableName() + " WHERE `player_id`=(SELECT `id` FROM " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " WHERE `user_uuid`=? LIMIT 1) LIMIT 1;")) {
             preparedStatement.setString(1, uuid.toString());
             final ResultSet resultSet = preparedStatement.executeQuery();
@@ -89,7 +93,7 @@ public class DataHandler {
                 Timestamp lastRtpTimestamp = resultSet.getTimestamp("last_rtp");
                 coolDownTimeLeft = lastRtpTimestamp.toInstant().getEpochSecond() + (60L * group.coolDownTimeMinutes()) - Instant.now().getEpochSecond();
                 if (coolDownTimeLeft <= 0) {
-                    try(PreparedStatement deletePlayerCoolDownStatement = connection.prepareStatement(
+                    try (PreparedStatement deletePlayerCoolDownStatement = connection.prepareStatement(
                             "DELETE FROM " + group.getGroupDatabaseTableName() + " WHERE `player_id`=(SELECT `id` FROM " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " WHERE `user_uuid`=? LIMIT 1) LIMIT 1;")) {
                         deletePlayerCoolDownStatement.setString(1, uuid.toString());
                         deletePlayerCoolDownStatement.executeUpdate();
@@ -106,17 +110,26 @@ public class DataHandler {
 
     public static void setPlayerOnCoolDown(UUID uuid, Group group) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-           Connection connection = getConnection();
-           try(PreparedStatement preparedStatement = connection.prepareStatement(
-                   "INSERT INTO " + group.getGroupDatabaseTableName() + " (`player_id`) SELECT `id` FROM " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " WHERE `user_uuid`=? LIMIT 1;")) {
-               preparedStatement.setString(1, uuid.toString());
-               preparedStatement.execute();
-           } catch (SQLException e) {
-               plugin.getLogger().log(Level.SEVERE, "An SQL exception has occurred", e);
-           }
+            Connection connection = getConnection();
+
+            try (PreparedStatement isPlayerNotAlreadySetCheck = connection.prepareStatement(
+                    "SELECT * FROM " + group.getGroupDatabaseTableName() + " WHERE `player_id`=(SELECT `id` FROM " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " WHERE `user_uuid`=?);")) {
+                isPlayerNotAlreadySetCheck.setString(1, uuid.toString());
+                ResultSet playerSetResultSet = isPlayerNotAlreadySetCheck.executeQuery();
+                if (!playerSetResultSet.next()) {
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(
+                            "INSERT INTO " + group.getGroupDatabaseTableName() + " (`player_id`) SELECT `id` FROM " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " WHERE `user_uuid`=? LIMIT 1;")) {
+                        preparedStatement.setString(1, uuid.toString());
+                        preparedStatement.execute();
+                    }
+                }
+            } catch (SQLException e) {
+                plugin.getLogger().log(Level.SEVERE, "An SQL exception has occurred", e);
+            }
         });
     }
 
-    public record CoolDownResponse(boolean isInCoolDown, long timeLeft) { }
+    public record CoolDownResponse(boolean isInCoolDown, long timeLeft) {
+    }
 
 }
