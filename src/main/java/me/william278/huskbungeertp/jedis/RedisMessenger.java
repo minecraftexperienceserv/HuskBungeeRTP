@@ -1,5 +1,6 @@
 package me.william278.huskbungeertp.jedis;
 
+import io.papermc.lib.PaperLib;
 import me.william278.huskbungeertp.HuskBungeeRTP;
 import me.william278.huskbungeertp.HuskHomesExecutor;
 import me.william278.huskhomes2.teleport.points.TeleportationPoint;
@@ -54,7 +55,8 @@ public class RedisMessenger {
                 //final String targetBiome = messageData[3];
                 World world = Bukkit.getWorld(targetWorld);
                 if (world != null) {
-                    Location randomLocation = HuskBungeeRTP.getAbstractRtp().getRandomLocation(world);
+                    final Location randomLocation = HuskBungeeRTP.getAbstractRtp().getRandomLocation(world);
+                    world.getChunkAt(randomLocation); // Load the chunk
                     publish(new RedisMessage(sourceServer, RedisMessage.RedisMessageType.REPLY_RANDOM_LOCATION,
                             sourcePlayerUUID + "#" + HuskBungeeRTP.getSettings().getServerId() + "#" +
                                     world.getName() + "#" + randomLocation.getX() + "#" +
