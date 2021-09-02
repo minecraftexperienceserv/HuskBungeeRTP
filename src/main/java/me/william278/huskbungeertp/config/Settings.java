@@ -18,11 +18,14 @@ public class Settings {
     // Jedis credentials
     private final String redisHost;
     private final int redisPort;
+    private final String redisPassword;
 
     // General options
     private final int averagePlayerCountDays;
     private final String serverId;
     private final boolean usePlan;
+    private final boolean useLastRtpLocationOnCoolDown;
+    private final String defaultRtpDestinationGroup;
 
     // Group configuration
     private final HashSet<Group> groups;
@@ -38,10 +41,13 @@ public class Settings {
 
         redisHost = config.getString("redis_credentials.host", "localhost");
         redisPort = config.getInt("redis_credentials.port", 3306);
+        redisPassword = config.getString("redis_credentials.password", "");
 
         averagePlayerCountDays = config.getInt("average_player_count_days", 7);
         serverId = config.getString("this_server_id", "server1");
         usePlan = config.getBoolean("use_plan", false);
+        useLastRtpLocationOnCoolDown = config.getBoolean("last_rtp_on_cooldown", true);
+        defaultRtpDestinationGroup = config.getString("default_rtp_group", "group1");
 
         groups = getGroups(config);
     }
@@ -102,12 +108,22 @@ public class Settings {
         return redisPort;
     }
 
+    public String getRedisPassword() { return redisPassword; }
+
     public boolean isUsePlan() {
         return usePlan;
     }
 
+    public Group getDefaultRtpDestinationGroup() {
+        return getGroupById(defaultRtpDestinationGroup);
+    }
+
     public int getAveragePlayerCountDays() {
         return averagePlayerCountDays;
+    }
+
+    public boolean isUseLastRtpLocationOnCoolDown() {
+        return useLastRtpLocationOnCoolDown;
     }
 
     public String getServerId() {
@@ -124,6 +140,15 @@ public class Settings {
                 if (serverId.equals(server.getName())) {
                     return group;
                 }
+            }
+        }
+        return null;
+    }
+
+    public Group getGroupById(String groupId) {
+        for (Group group : groups) {
+            if (group.getGroupId().equals(groupId)) {
+                return group;
             }
         }
         return null;

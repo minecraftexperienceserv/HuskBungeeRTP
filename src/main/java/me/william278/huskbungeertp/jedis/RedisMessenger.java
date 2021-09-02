@@ -1,8 +1,8 @@
 package me.william278.huskbungeertp.jedis;
 
-import io.papermc.lib.PaperLib;
 import me.william278.huskbungeertp.HuskBungeeRTP;
 import me.william278.huskbungeertp.HuskHomesExecutor;
+import me.william278.huskbungeertp.mysql.DataHandler;
 import me.william278.huskhomes2.teleport.points.TeleportationPoint;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class RedisMessenger {
@@ -19,6 +20,10 @@ public class RedisMessenger {
 
     public static void subscribe() {
         Jedis jedis = new Jedis(HuskBungeeRTP.getSettings().getRedisHost(), HuskBungeeRTP.getSettings().getRedisPort());
+        final String jedisPassword = HuskBungeeRTP.getSettings().getRedisPassword();
+        if (!jedisPassword.equals("")) {
+            jedis.auth(jedisPassword);
+        }
         jedis.connect();
         new Thread(() -> jedis.subscribe(new JedisPubSub() {
             @Override
@@ -38,6 +43,10 @@ public class RedisMessenger {
 
     public static void publish(RedisMessage message) {
         try (Jedis publisher = new Jedis(HuskBungeeRTP.getSettings().getRedisHost(), HuskBungeeRTP.getSettings().getRedisPort())) {
+            final String jedisPassword = HuskBungeeRTP.getSettings().getRedisPassword();
+            if (!jedisPassword.equals("")) {
+                publisher.auth(jedisPassword);
+            }
             publisher.connect();
             publisher.publish(REDIS_CHANNEL, message.toString());
         }
@@ -51,8 +60,8 @@ public class RedisMessenger {
                 final UUID sourcePlayerUUID = UUID.fromString(messageData[0]);
                 final String sourceServer = messageData[1];
                 final String targetWorld = messageData[2];
-
                 //final String targetBiome = messageData[3];
+                final String targetGroupId = messageData[4];
                 World world = Bukkit.getWorld(targetWorld);
                 if (world != null) {
                     final Location randomLocation = HuskBungeeRTP.getAbstractRtp().getRandomLocation(world);
@@ -60,7 +69,7 @@ public class RedisMessenger {
                     publish(new RedisMessage(sourceServer, RedisMessage.RedisMessageType.REPLY_RANDOM_LOCATION,
                             sourcePlayerUUID + "#" + HuskBungeeRTP.getSettings().getServerId() + "#" +
                                     world.getName() + "#" + randomLocation.getX() + "#" +
-                                    randomLocation.getY() + "#" + randomLocation.getZ()));
+                                    randomLocation.getY() + "#" + randomLocation.getZ() + "#" + targetGroupId));
                 }
             }
             case REPLY_RANDOM_LOCATION -> {
@@ -71,12 +80,18 @@ public class RedisMessenger {
                 final double locationX = Double.parseDouble(messageData[3]);
                 final double locationY = Double.parseDouble(messageData[4]);
                 final double locationZ = Double.parseDouble(messageData[5]);
+                final String destinationGroupId = messageData[6];
 
                 Player player = Bukkit.getPlayer(originPlayerUUID);
                 if (player != null) {
                     HuskHomesExecutor.teleportPlayer(player, new TeleportationPoint(
                             locationWorld, locationX, locationY, locationZ, 0F, 0F, sourceServer));
-                }
+                    // Apply cool down
+                    if (!player.hasPermission("huskrtp.bypass_cooldown")) {
+                        DataHandler.setPlayerOnCoolDown(originPlayerUUID, HuskBungeeRTP.getSettings().getGroupById(destinationGroupId),
+                                new TeleportationPoint(locationWorld, locationX, locationY, locationZ, 0F, 0F, sourceServer));
+                    }}
+
             }
         }
     }

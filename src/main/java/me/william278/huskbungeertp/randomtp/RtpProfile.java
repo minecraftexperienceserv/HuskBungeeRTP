@@ -10,7 +10,7 @@ public class RtpProfile {
     private final Biome targetBiome;
 
     public RtpProfile() {
-        destinationGroup = HuskBungeeRTP.getSettings().getThisServerGroup();
+        destinationGroup = HuskBungeeRTP.getSettings().getDefaultRtpDestinationGroup();
         targetBiome = null;
     }
 

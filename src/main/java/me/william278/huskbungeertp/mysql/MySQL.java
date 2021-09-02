@@ -52,15 +52,19 @@ public class MySQL extends Database {
             // Create player table statement
             tableCreationStatement.execute("CREATE TABLE IF NOT EXISTS " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " ("
                     + "`id` integer AUTO_INCREMENT PRIMARY KEY,"
-                    + "`user_uuid` char(36) NOT NULL UNIQUE,"
-                    + "`is_performing_rtp` boolean NOT NULL DEFAULT FALSE"
+                    + "`user_uuid` char(36) NOT NULL UNIQUE"
                     + ");");
 
             // Create group cool-down tables
             for (Group group : HuskBungeeRTP.getSettings().getGroups()) {
                 tableCreationStatement.execute("CREATE TABLE IF NOT EXISTS " + group.getGroupDatabaseTableName() + " ("
                         + "`player_id` integer AUTO_INCREMENT PRIMARY KEY,"
-                        + "`last_rtp` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP)"
+                        + "`last_rtp` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP),"
+                        + "`dest_world` tinytext NOT NULL,"
+                        + "`dest_x` double NOT NULL,"
+                        + "`dest_y` double NOT NULL,"
+                        + "`dest_z` double NOT NULL,"
+                        + "`dest_server` tinytext NOT NULL"
                         + ");");
             }
         } catch (SQLException e) {

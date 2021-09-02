@@ -27,4 +27,4 @@ permissions:
     default: op
   huskrtp.bypass_cooldown:
     description: Lets you bypass all rtp cooldown times
-    default: op
+    default: false

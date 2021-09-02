@@ -2,6 +2,7 @@ package me.william278.huskbungeertp.mysql;
 
 import me.william278.huskbungeertp.HuskBungeeRTP;
 import me.william278.huskbungeertp.config.Group;
+import me.william278.huskhomes2.teleport.points.TeleportationPoint;
 import org.bukkit.Bukkit;
 
 import java.sql.*;
@@ -48,39 +49,6 @@ public class DataHandler {
     /*
     Not thread safe, perform inside a RunTaskAsynchronously!
      */
-    public static boolean getPlayerTeleporting(UUID uuid) {
-        boolean isPlayerTeleporting = false;
-        Connection connection = getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(
-                "SELECT * FROM " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " WHERE `user_uuid`=? LIMIT 1;")) {
-            preparedStatement.setString(1, uuid.toString());
-            final ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                isPlayerTeleporting = resultSet.getBoolean("is_performing_rtp");
-            }
-        } catch (SQLException e) {
-            plugin.getLogger().log(Level.SEVERE, "An SQL exception has occurred", e);
-        }
-        return isPlayerTeleporting;
-    }
-
-    public static void setPlayerTeleporting(UUID uuid, boolean teleporting) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            Connection connection = getConnection();
-            try (PreparedStatement preparedStatement = connection.prepareStatement(
-                    "UPDATE " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " SET `is_performing_rtp`=? WHERE `user_uuid`=? LIMIT 1;")) {
-                preparedStatement.setBoolean(1, teleporting);
-                preparedStatement.setString(2, uuid.toString());
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                plugin.getLogger().log(Level.SEVERE, "An SQL exception has occurred", e);
-            }
-        });
-    }
-
-    /*
-    Not thread safe, perform inside a RunTaskAsynchronously!
-     */
     public static CoolDownResponse getPlayerCoolDown(UUID uuid, Group group) {
         boolean isPlayerOnCoolDown = false;
         long coolDownTimeLeft = 0L;
@@ -108,7 +76,31 @@ public class DataHandler {
         return new CoolDownResponse(isPlayerOnCoolDown, coolDownTimeLeft);
     }
 
-    public static void setPlayerOnCoolDown(UUID uuid, Group group) {
+    /*
+        Not thread safe, perform inside a RunTaskAsynchronously!
+     */
+    public static TeleportationPoint getPlayerLastRtpPosition(UUID uuid, Group group) {
+        TeleportationPoint point = null;
+        Connection connection = getConnection();
+        try (PreparedStatement statement = connection.prepareStatement(
+                "SELECT * FROM " + group.getGroupDatabaseTableName() + " WHERE `player_id`=(SELECT `id` FROM " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " WHERE `user_uuid`=? LIMIT 1) LIMIT 1;")) {
+            statement.setString(1, uuid.toString());
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                point = new TeleportationPoint(resultSet.getString("dest_world"),
+                        resultSet.getDouble("dest_x"),
+                        resultSet.getDouble("dest_y"),
+                        resultSet.getDouble("dest_z"),
+                        0F, 0F,
+                        resultSet.getString("dest_server"));
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.SEVERE, "An SQL exception has occurred", e);
+        }
+        return point;
+    }
+
+    public static void setPlayerOnCoolDown(UUID uuid, Group group, TeleportationPoint point) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             Connection connection = getConnection();
 
@@ -117,11 +109,25 @@ public class DataHandler {
                 isPlayerNotAlreadySetCheck.setString(1, uuid.toString());
                 ResultSet playerSetResultSet = isPlayerNotAlreadySetCheck.executeQuery();
                 if (!playerSetResultSet.next()) {
-                    try (PreparedStatement preparedStatement = connection.prepareStatement(
-                            "INSERT INTO " + group.getGroupDatabaseTableName() + " (`player_id`) SELECT `id` FROM " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " WHERE `user_uuid`=? LIMIT 1;")) {
-                        preparedStatement.setString(1, uuid.toString());
-                        preparedStatement.execute();
+                    try (PreparedStatement getPlayerIdStatement = connection.prepareStatement(
+                            "SELECT * FROM " + HuskBungeeRTP.getSettings().getDatabasePlayerTableName() + " WHERE `user_uuid`=? LIMIT 1;")) {
+                        getPlayerIdStatement.setString(1, uuid.toString());
+                        ResultSet playerIdSet = getPlayerIdStatement.executeQuery();
+                        if (playerIdSet.next()) {
+                            int playerId = playerIdSet.getInt("id");
+                            try (PreparedStatement preparedStatement = connection.prepareStatement(
+                                    "INSERT INTO " + group.getGroupDatabaseTableName() + " (`player_id`,`dest_world`,`dest_x`,`dest_y`,`dest_z`,`dest_server`) VALUES(?,?,?,?,?,?);")) {
+                                preparedStatement.setInt(1, playerId);
+                                preparedStatement.setString(2, point.getWorldName());
+                                preparedStatement.setDouble(3, point.getX());
+                                preparedStatement.setDouble(4, point.getY());
+                                preparedStatement.setDouble(5, point.getZ());
+                                preparedStatement.setString(6, point.getServer());
+                                preparedStatement.executeUpdate();
+                            }
+                        }
                     }
+
                 }
             } catch (SQLException e) {
                 plugin.getLogger().log(Level.SEVERE, "An SQL exception has occurred", e);
