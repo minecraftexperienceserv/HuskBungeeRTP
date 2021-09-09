@@ -10,6 +10,7 @@ import me.william278.huskbungeertp.mysql.DataHandler;
 import me.william278.huskhomes2.teleport.points.TeleportationPoint;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -51,14 +52,20 @@ public class RtpHandler {
 
             Group.Server targetServer = determineTargetServer(profile.getDestinationGroup().getServers());
             String targetWorld = determineTargetWorld(targetServer);
+            String targetBiome = "ALL";
+            Biome profileTargetBiome = profile.getTargetBiome();
+            if (profileTargetBiome != null) {
+                targetBiome = profileTargetBiome.toString();
+            }
 
             if (targetServer.getName().equals(HuskBungeeRTP.getSettings().getServerId())) {
+                final String finalTargetBiome = targetBiome;
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     World targetLocalWorld = Bukkit.getWorld(targetWorld);
                     if (targetLocalWorld == null) {
                         targetLocalWorld = player.getWorld();
                     }
-                    final TeleportationPoint targetPoint = new TeleportationPoint(HuskBungeeRTP.getAbstractRtp().getRandomLocation(targetLocalWorld), targetServer.getName());
+                    final TeleportationPoint targetPoint = new TeleportationPoint(HuskBungeeRTP.getAbstractRtp().getRandomLocation(targetLocalWorld, finalTargetBiome), targetServer.getName());
                     HuskHomesExecutor.teleportPlayer(player, targetPoint);
 
                     // Apply cool down
@@ -69,14 +76,30 @@ public class RtpHandler {
             } else {
                 // Cross server RTP time!
                 RedisMessenger.publish(new RedisMessage(targetServer.getName(), RedisMessage.RedisMessageType.REQUEST_RANDOM_LOCATION,
-                        uuid + "#" + HuskBungeeRTP.getSettings().getServerId() + "#" + targetWorld + "#" + "TARGET_BIOME" + "#" + profile.getDestinationGroup().getGroupId())); //todo target biome!
+                        uuid + "#" + HuskBungeeRTP.getSettings().getServerId() + "#" + targetWorld + "#" + targetBiome + "#" + profile.getDestinationGroup().getGroupId()));
             }
         });
     }
 
+    /* Determines the target server. If using plan integration, it finds the server with the lowest playtime.
+       If two servers both have the lowest playtime, it picks one randomly between them.
+       Otherwise, if the plan integration is not being used it picks a random server */
     private static Group.Server determineTargetServer(HashSet<Group.Server> servers) {
-        // todo PlanIntegration!
-        final ArrayList<Group.Server> shuffledServers = new ArrayList<>(servers);
+        final HashSet<Group.Server> possibleTargets = new HashSet<>(servers);
+        if (HuskBungeeRTP.usePlanIntegration()) {
+            HuskBungeeRTP.fetchPlanIfNeeded(); // Pull fresh plan data if needed
+            HashSet<String> targetServerIds = HuskBungeeRTP.getServerIdsWithLowestPlayTime(servers);
+            possibleTargets.clear();
+            for (Group.Server server : servers) {
+                for (String serverId : targetServerIds) {
+                    if (server.getName().equals(serverId)) {
+                        possibleTargets.add(server);
+                        break;
+                    }
+                }
+            }
+        }
+        final ArrayList<Group.Server> shuffledServers = new ArrayList<>(possibleTargets);
         Collections.shuffle(shuffledServers);
         return shuffledServers.get(0);
     }

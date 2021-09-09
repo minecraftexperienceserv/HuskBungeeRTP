@@ -9,11 +9,11 @@ depend:
   - HuskHomes
 softdepend:
   - JakesRTP
-  - PlayerAnalytics
+  - Plan
 
 commands:
   rtp:
-    usage: /rtp [player] [destination_group] [biome]
+    usage: /rtp [player] [group] [biome]
     description: Randomly teleport a player
     permission: huskrtp.command.rtp
 permissions:

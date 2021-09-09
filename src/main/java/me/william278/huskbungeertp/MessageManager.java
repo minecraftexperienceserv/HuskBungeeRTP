@@ -1,14 +1,12 @@
 package me.william278.huskbungeertp;
 
 import de.themoep.minedown.MineDown;
-import net.md_5.bungee.api.ChatMessageType;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -114,19 +112,6 @@ public class MessageManager {
 
     public static String getRawMessage(String messageID) {
         return messages.get(messageID);
-    }
-
-    public static String getRawMessage(String messageID, String... placeholderReplacements) {
-        String message = messages.get(messageID);
-        int replacementIndexer = 1;
-
-        // Replace placeholders
-        for (String replacement : placeholderReplacements) {
-            String replacementString = "%" + replacementIndexer + "%";
-            message = message.replace(replacementString, replacement);
-            replacementIndexer = replacementIndexer + 1;
-        }
-        return message;
     }
 
 }

@@ -1,4 +1,8 @@
 error_console_player_specify: '[Error:](#ff3300) [You must specify a player to randomly teleport.](#ff7e5e)'
+error_invalid_player: '[Error:](#ff3300) [Please specify a valid online player name.](#ff7e5e)'
+error_invalid_group: '[Error:](#ff3300) [Please specify a valid RTP destination group.](#ff7e5e)'
+error_invalid_biome: '[Error:](#ff3300) [Please specify a valid biome.](#ff7e5e)'
+randomly_teleporting_player: '[Attempting to randomly teleport %1% to a safe location!](#00fb9a)'
 error_cooldown_minutes: '[Error:](#ff3300) [You must wait ⌚ %1% minutes before randomly teleporting again.](#ff7e5e)'
 error_cooldown_seconds: '[Error:](#ff3300) [You must wait ⌚ %1% seconds before randomly teleporting again.](#ff7e5e)'
 last_rtp_cooldown_minutes: '[Random teleporting is on cooldown for ⌚ %1% minute\(s\). Returning to your last RTP location...](gray)'

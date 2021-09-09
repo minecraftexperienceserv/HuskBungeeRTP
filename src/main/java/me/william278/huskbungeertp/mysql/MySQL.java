@@ -76,5 +76,4 @@ public class MySQL extends Database {
         initialize();
     }
 
-
 }

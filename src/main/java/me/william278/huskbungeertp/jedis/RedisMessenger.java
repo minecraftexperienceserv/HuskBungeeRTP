@@ -59,11 +59,11 @@ public class RedisMessenger {
                 final UUID sourcePlayerUUID = UUID.fromString(messageData[0]);
                 final String sourceServer = messageData[1];
                 final String targetWorld = messageData[2];
-                //final String targetBiome = messageData[3];
+                final String targetBiomeString = messageData[3];
                 final String targetGroupId = messageData[4];
                 World world = Bukkit.getWorld(targetWorld);
                 if (world != null) {
-                    final Location randomLocation = HuskBungeeRTP.getAbstractRtp().getRandomLocation(world);
+                    final Location randomLocation = HuskBungeeRTP.getAbstractRtp().getRandomLocation(world, targetBiomeString);
                     world.getChunkAt(randomLocation); // Load the chunk
                     publish(new RedisMessage(sourceServer, RedisMessage.RedisMessageType.REPLY_RANDOM_LOCATION,
                             sourcePlayerUUID + "#" + HuskBungeeRTP.getSettings().getServerId() + "#" +

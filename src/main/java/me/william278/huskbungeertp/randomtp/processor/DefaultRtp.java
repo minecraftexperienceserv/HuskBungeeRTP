@@ -3,6 +3,7 @@ package me.william278.huskbungeertp.randomtp.processor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 
 import java.util.Collections;
@@ -21,17 +22,23 @@ public class DefaultRtp extends AbstractRtp {
     ));
 
     // Maximum number of attempts to find a random location
-    private static final int MAX_RANDOM_ATTEMPTS = 8;
     public static final int RADIUS = 5000;
 
     @Override
     public void initialize() {}
 
     @Override
-    public Location getRandomLocation(World world) {
+    public Location getRandomLocation(World world, String targetBiomeString) {
         for (int i = 0; i < MAX_RANDOM_ATTEMPTS; i++) {
             Location randomLocation = randomLocation(world);
-            if (isLocationSafe(randomLocation)) {
+            boolean isLocationValid = isLocationSafe(randomLocation);
+            if (!targetBiomeString.equalsIgnoreCase("ALL")) {
+                Biome targetBiome = Biome.valueOf(targetBiomeString);
+                if (world.getBiome(randomLocation) != targetBiome) {
+                    isLocationValid = false;
+                }
+            }
+            if (isLocationValid) {
                 return randomLocation;
             }
         }

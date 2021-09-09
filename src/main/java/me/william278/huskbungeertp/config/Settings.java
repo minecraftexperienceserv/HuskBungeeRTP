@@ -3,6 +3,7 @@ package me.william278.huskbungeertp.config;
 import org.bukkit.configuration.Configuration;
 
 import java.util.HashSet;
+import java.util.Objects;
 
 public class Settings {
 
@@ -21,6 +22,7 @@ public class Settings {
     private final String redisPassword;
 
     // General options
+    private final int updatePlanDataHours;
     private final int averagePlayerCountDays;
     private final String serverId;
     private final boolean usePlan;
@@ -43,6 +45,7 @@ public class Settings {
         redisPort = config.getInt("redis_credentials.port", 3306);
         redisPassword = config.getString("redis_credentials.password", "");
 
+        updatePlanDataHours = config.getInt("update_plan_data_hours", 1);
         averagePlayerCountDays = config.getInt("average_player_count_days", 7);
         serverId = config.getString("this_server_id", "server1");
         usePlan = config.getBoolean("use_plan", false);
@@ -54,7 +57,7 @@ public class Settings {
 
     private HashSet<Group> getGroups(Configuration config) {
         HashSet<Group> groups = new HashSet<>();
-        for (String groupId : config.getConfigurationSection("groups").getKeys(false)) {
+        for (String groupId : Objects.requireNonNull(config.getConfigurationSection("groups")).getKeys(false)) {
             final String tableName = config.getString("groups." + groupId + ".table_name");
             final int coolDownMinutes = config.getInt("groups." + groupId + ".cooldown_minutes");
             final HashSet<Group.Server> servers = getGroupServers(config, groupId);
@@ -65,7 +68,7 @@ public class Settings {
 
     private HashSet<Group.Server> getGroupServers(Configuration config, String groupId) {
         HashSet<Group.Server> servers = new HashSet<>();
-        for (String groupServerId : config.getConfigurationSection("groups." + groupId + ".servers_worlds").getKeys(false)) {
+        for (String groupServerId : Objects.requireNonNull(config.getConfigurationSection("groups." + groupId + ".servers_worlds")).getKeys(false)) {
             final HashSet<String> serverWorlds = new HashSet<>(config.getStringList("groups." + groupId + ".servers_worlds." + groupServerId));
             servers.add(new Group.Server(groupServerId, serverWorlds));
         }
@@ -110,6 +113,8 @@ public class Settings {
 
     public String getRedisPassword() { return redisPassword; }
 
+    public int getUpdatePlanDataHours() { return updatePlanDataHours; }
+
     public boolean isUsePlan() {
         return usePlan;
     }
@@ -118,7 +123,7 @@ public class Settings {
         return getGroupById(defaultRtpDestinationGroup);
     }
 
-    public int getAveragePlayerCountDays() {
+    public long getAveragePlayerCountDays() {
         return averagePlayerCountDays;
     }
 
@@ -132,6 +137,14 @@ public class Settings {
 
     public HashSet<Group> getGroups() {
         return groups;
+    }
+
+    public HashSet<String> getGroupIds() {
+        HashSet<String> groupNames = new HashSet<>();
+        for (Group group : groups) {
+            groupNames.add(group.getGroupId());
+        }
+        return groupNames;
     }
 
     public Group getThisServerGroup() {
