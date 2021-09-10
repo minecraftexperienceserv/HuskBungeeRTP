@@ -7,6 +7,7 @@ import me.william278.huskbungeertp.config.Group;
 import me.william278.huskbungeertp.jedis.RedisMessage;
 import me.william278.huskbungeertp.jedis.RedisMessenger;
 import me.william278.huskbungeertp.mysql.DataHandler;
+import me.william278.huskbungeertp.randomtp.processor.AbstractRtp;
 import me.william278.huskhomes2.teleport.points.TeleportationPoint;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -21,11 +22,15 @@ import java.util.UUID;
 public class RtpHandler {
 
     private static final HuskBungeeRTP plugin = HuskBungeeRTP.getInstance();
+    public static HashSet<UUID> rtpUsers = new HashSet<>();
 
     public static void processRtp(Player player, RtpProfile profile) {
         final UUID uuid = player.getUniqueId();
         final boolean canBypassCoolDown = player.hasPermission("huskrtp.bypass_cooldown");
-
+        if (rtpUsers.contains(uuid)) {
+            MessageManager.sendMessage(player, "error_already_rtping");
+            return;
+        }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             final DataHandler.CoolDownResponse coolDownResponse = DataHandler.getPlayerCoolDown(player.getUniqueId(), profile.getDestinationGroup());
             if (coolDownResponse.isInCoolDown() && !canBypassCoolDown) {
@@ -49,6 +54,7 @@ public class RtpHandler {
                 return;
             }
             MessageManager.sendMessage(player, "processing_rtp");
+            rtpUsers.add(uuid);
 
             Group.Server targetServer = determineTargetServer(profile.getDestinationGroup().getServers());
             String targetWorld = determineTargetWorld(targetServer);
@@ -65,8 +71,15 @@ public class RtpHandler {
                     if (targetLocalWorld == null) {
                         targetLocalWorld = player.getWorld();
                     }
-                    final TeleportationPoint targetPoint = new TeleportationPoint(HuskBungeeRTP.getAbstractRtp().getRandomLocation(targetLocalWorld, finalTargetBiome), targetServer.getName());
+                    AbstractRtp.RandomResult result = HuskBungeeRTP.getAbstractRtp().getRandomLocation(targetLocalWorld, finalTargetBiome);
+                    if (!result.successful()) {
+                        MessageManager.sendMessage(player, "error_rtp_failed", Integer.toString(result.attemptsTaken()));
+                        rtpUsers.remove(uuid);
+                        return;
+                    }
+                    final TeleportationPoint targetPoint = new TeleportationPoint(result.location(), targetServer.getName());
                     HuskHomesExecutor.teleportPlayer(player, targetPoint);
+                    rtpUsers.remove(uuid);
 
                     // Apply cool down
                     if (!canBypassCoolDown) {

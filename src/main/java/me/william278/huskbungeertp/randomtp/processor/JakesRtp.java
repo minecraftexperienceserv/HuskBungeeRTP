@@ -41,24 +41,28 @@ public class JakesRtp extends AbstractRtp {
     }
 
     @Override
-    public Location getRandomLocation(World world, String targetBiomeString) {
-        Location location = world.getSpawnLocation();
+    public RandomResult getRandomLocation(World world, String targetBiomeString) {
+        Location location;
+        final int maxAttempts = HuskBungeeRTP.getSettings().getMaxRtpAttempts();
         try {
             if (targetBiomeString.equalsIgnoreCase("ALL")) {
                 location = randomTeleporter.getRtpLocation(randomTeleporter.getRtpSettingsByWorld(world), world.getSpawnLocation(), true);
+                return new RandomResult(location, true, 1);
             } else {
-                for (int i = 0; i < MAX_RANDOM_ATTEMPTS; i++) {
+                Biome targetBiome = Biome.valueOf(targetBiomeString);
+                int attempts;
+                for (attempts = 0; attempts < maxAttempts; attempts++) {
                     location = randomTeleporter.getRtpLocation(randomTeleporter.getRtpSettingsByWorld(world), world.getSpawnLocation(), true);
-                    if (world.getBiome(location) == Biome.valueOf(targetBiomeString)) {
-                        return location;
+                    if (location.getBlock().getBiome() == targetBiome) {
+                        return new RandomResult(location, true, attempts);
                     }
                 }
-                return world.getSpawnLocation();
+                return new RandomResult(null, false, attempts);
             }
         } catch (Exception e) {
             HuskBungeeRTP.getInstance().getLogger().log(Level.SEVERE, "An exception occurred fetching a random location!", e);
         }
-        return location;
+        return new RandomResult(null, false, 0);
     }
 
 }

@@ -28,6 +28,7 @@ public class Settings {
     private final boolean usePlan;
     private final boolean useLastRtpLocationOnCoolDown;
     private final String defaultRtpDestinationGroup;
+    private final int maxRtpAttempts;
 
     // Group configuration
     private final HashSet<Group> groups;
@@ -51,6 +52,7 @@ public class Settings {
         usePlan = config.getBoolean("use_plan", false);
         useLastRtpLocationOnCoolDown = config.getBoolean("last_rtp_on_cooldown", true);
         defaultRtpDestinationGroup = config.getString("default_rtp_group", "group1");
+        maxRtpAttempts = config.getInt("max_rtp_attempts", 10);
 
         groups = getGroups(config);
     }
@@ -165,5 +167,9 @@ public class Settings {
             }
         }
         return null;
+    }
+
+    public int getMaxRtpAttempts() {
+        return maxRtpAttempts;
     }
 }

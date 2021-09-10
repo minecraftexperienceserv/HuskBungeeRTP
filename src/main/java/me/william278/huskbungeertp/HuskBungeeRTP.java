@@ -58,7 +58,7 @@ public final class HuskBungeeRTP extends JavaPlugin {
                     lowestIdServers.add(serverName);
                 }
             } else {
-                getInstance().getLogger().warning("A server in a RTP group failed to return plan playtime data.");
+                getInstance().getLogger().warning("A server in a RTP group failed to return Plan playtime data.");
             }
         }
         return lowestIdServers;
@@ -70,6 +70,7 @@ public final class HuskBungeeRTP extends JavaPlugin {
             planHook.ifPresent(hook -> {
                 usePlan = true;
                 planPlayTimes = hook.getPlayTimes();
+                getInstance().getLogger().info("Fetched latest playtime data from Plan");
             });
             lastPlanFetch = Instant.now().getEpochSecond();
         } catch (NoClassDefFoundError ignored) {

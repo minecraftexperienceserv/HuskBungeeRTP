@@ -76,7 +76,7 @@ public class RtpCommand implements CommandExecutor {
         @Override
         public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
             if (command.getPermission() != null) {
-                if (sender.hasPermission(command.getPermission())) {
+                if (!sender.hasPermission(command.getPermission())) {
                     return Collections.emptyList();
                 }
             }

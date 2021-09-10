@@ -7,8 +7,8 @@ public abstract class AbstractRtp {
 
     public abstract void initialize();
 
-    public abstract Location getRandomLocation(World world, String targetBiomeString);
+    public abstract RandomResult getRandomLocation(World world, String targetBiomeString);
 
-    public static final int MAX_RANDOM_ATTEMPTS = 32;
+    public record RandomResult(Location location, boolean successful, int attemptsTaken) { }
 
 }

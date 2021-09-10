@@ -2,7 +2,10 @@ package me.william278.huskbungeertp.jedis;
 
 import me.william278.huskbungeertp.HuskBungeeRTP;
 import me.william278.huskbungeertp.HuskHomesExecutor;
+import me.william278.huskbungeertp.MessageManager;
 import me.william278.huskbungeertp.mysql.DataHandler;
+import me.william278.huskbungeertp.randomtp.RtpHandler;
+import me.william278.huskbungeertp.randomtp.processor.AbstractRtp;
 import me.william278.huskhomes2.teleport.points.TeleportationPoint;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -54,6 +57,15 @@ public class RedisMessenger {
     public static void handleReceivedMessage(RedisMessage message) {
         String[] messageData = message.getMessageData().split("#");
         switch (message.getMessageType()) {
+            case REPLY_RANDOM_FAILED -> {
+                final UUID originPlayerUUID = UUID.fromString(messageData[0]);
+                final int attemptsTaken = Integer.parseInt(messageData[1]);
+                Player player = Bukkit.getPlayer(originPlayerUUID);
+                if (player != null) {
+                    MessageManager.sendMessage(player, "error_rtp_failed", Integer.toString(attemptsTaken));
+                    RtpHandler.rtpUsers.remove(player.getUniqueId());
+                }
+            }
             case REQUEST_RANDOM_LOCATION -> {
                 // An incoming request that this server find and return a random location
                 final UUID sourcePlayerUUID = UUID.fromString(messageData[0]);
@@ -63,7 +75,13 @@ public class RedisMessenger {
                 final String targetGroupId = messageData[4];
                 World world = Bukkit.getWorld(targetWorld);
                 if (world != null) {
-                    final Location randomLocation = HuskBungeeRTP.getAbstractRtp().getRandomLocation(world, targetBiomeString);
+                    AbstractRtp.RandomResult result = HuskBungeeRTP.getAbstractRtp().getRandomLocation(world, targetBiomeString);
+                    if (!result.successful()) {
+                        publish(new RedisMessage(sourceServer, RedisMessage.RedisMessageType.REPLY_RANDOM_FAILED,
+                                sourcePlayerUUID + "#" + result.attemptsTaken()));
+                        return;
+                    }
+                    final Location randomLocation = result.location();
                     world.getChunkAt(randomLocation); // Load the chunk
                     publish(new RedisMessage(sourceServer, RedisMessage.RedisMessageType.REPLY_RANDOM_LOCATION,
                             sourcePlayerUUID + "#" + HuskBungeeRTP.getSettings().getServerId() + "#" +
@@ -85,6 +103,8 @@ public class RedisMessenger {
                 if (player != null) {
                     HuskHomesExecutor.teleportPlayer(player, new TeleportationPoint(
                             locationWorld, locationX, locationY, locationZ, 0F, 0F, sourceServer));
+                    RtpHandler.rtpUsers.remove(player.getUniqueId());
+
                     // Apply cool down
                     if (!player.hasPermission("huskrtp.bypass_cooldown")) {
                         DataHandler.setPlayerOnCoolDown(originPlayerUUID, HuskBungeeRTP.getSettings().getGroupById(destinationGroupId),

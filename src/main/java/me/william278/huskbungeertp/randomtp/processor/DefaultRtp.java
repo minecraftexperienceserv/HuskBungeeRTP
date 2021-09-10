@@ -1,5 +1,6 @@
 package me.william278.huskbungeertp.randomtp.processor;
 
+import me.william278.huskbungeertp.HuskBungeeRTP;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -28,8 +29,10 @@ public class DefaultRtp extends AbstractRtp {
     public void initialize() {}
 
     @Override
-    public Location getRandomLocation(World world, String targetBiomeString) {
-        for (int i = 0; i < MAX_RANDOM_ATTEMPTS; i++) {
+    public RandomResult getRandomLocation(World world, String targetBiomeString) {
+        int attempts;
+        final int maxAttempts = HuskBungeeRTP.getSettings().getMaxRtpAttempts();
+        for (attempts = 0; attempts < maxAttempts; attempts++) {
             Location randomLocation = randomLocation(world);
             boolean isLocationValid = isLocationSafe(randomLocation);
             if (!targetBiomeString.equalsIgnoreCase("ALL")) {
@@ -39,10 +42,10 @@ public class DefaultRtp extends AbstractRtp {
                 }
             }
             if (isLocationValid) {
-                return randomLocation;
+                return new RandomResult(randomLocation, true, attempts);
             }
         }
-        return world.getSpawnLocation();
+        return new RandomResult(null, false, attempts);
     }
 
     private Location randomLocation(World world) {
