@@ -39,6 +39,10 @@ public final class HuskBungeeRTP extends JavaPlugin {
     private static boolean usePlan = false;
     private static HashMap<String, Long> planPlayTimes = new HashMap<>();
 
+    public static HashMap<String,Long> getPlanPlayTimes() {
+        return planPlayTimes;
+    }
+
     public static boolean usePlanIntegration() {
         return usePlan;
     }
@@ -103,17 +107,20 @@ public final class HuskBungeeRTP extends JavaPlugin {
         instance = this;
     }
 
+    public static void reloadConfigFile() {
+        HuskBungeeRTP instance = HuskBungeeRTP.getInstance();
+        instance.reloadConfig();
+        instance.saveDefaultConfig();
+        instance.setSettings(instance.getConfig());
+        MessageManager.loadMessages();
+    }
+
     @Override
     public void onEnable() {
         // Plugin startup logic
 
-        // Load settings
-        reloadConfig();
-        saveDefaultConfig();
-        setSettings(getConfig());
-
-        // Load messages
-        MessageManager.loadMessages();
+        // Load settings and messages
+        reloadConfigFile();
 
         // Load database
         DataHandler.loadDatabase(getInstance());
