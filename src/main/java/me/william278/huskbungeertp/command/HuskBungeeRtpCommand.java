@@ -37,9 +37,13 @@ public class HuskBungeeRtpCommand implements CommandExecutor {
                     for (Group group : groups) {
                         StringJoiner joiner = new StringJoiner("\n");
                         for (Group.Server server : group.getServers()) {
-                            joiner.add("&f• &7" + server.getName());
+                            StringJoiner worldJoiner = new StringJoiner(", ");
+                            for (String worldName : server.getWorlds()) {
+                                worldJoiner.add(worldName);
+                            }
+                            joiner.add("&f• &7" + server.getName() + "\\(" + worldJoiner + "\\)");
                         }
-                        sender.spigot().sendMessage(new MineDown("[" + group.groupId() + "](#00fb9a show_text=&#00fb9a&Group ID) [•](#262626) [" + group.getGroupDatabaseTableName() + "](#00fb9a show_text=&#00fb9a&Group database table name) [⌚" + group.getCoolDownTimeMinutes() + "m](#00fb9a show_text=&#00fb9a&Group cooldown time) [•](#262626) + [[View servers...]](white show_text=&#00fb9a&ⓘ Server List:&f" + joiner + ")").toComponent());
+                        sender.spigot().sendMessage(new MineDown("[" + group.groupId() + "](#00fb9a show_text=&#00fb9a&Group ID) [•](#262626) [" + group.getGroupDatabaseTableName() + "](gray show_text=&#00fb9a&Group database table name) [•](#262626) [⌚" + group.getCoolDownTimeMinutes() + "m](gray show_text=&#00fb9a&Group cooldown time) [•](#262626) [[ⓘ Servers]](white show_text=&#00fb9a&Servers & worlds:\b&f" + joiner + ")").toComponent());
                     }
                 }
                 case "plan" -> {
