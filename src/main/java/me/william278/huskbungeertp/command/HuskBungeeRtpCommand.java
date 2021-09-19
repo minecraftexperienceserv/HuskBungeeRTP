@@ -28,7 +28,7 @@ public class HuskBungeeRtpCommand implements CommandExecutor {
             switch (args[0].toLowerCase()) {
                 case "about", "info" -> sender.spigot().sendMessage(new MineDown(PLUGIN_INFORMATION.toString()).toComponent());
                 case "groups" -> {
-                    sender.spigot().sendMessage(new MineDown("[HuskBungeeRTP](#00fb9a bold) [Available groups:](#00fb9a)").toComponent());
+                    sender.spigot().sendMessage(new MineDown("[HuskBungeeRTP](#00fb9a bold) [| Available groups:](#00fb9a)").toComponent());
                     HashSet<Group> groups = HuskBungeeRTP.getSettings().getGroups();
                     if (groups.isEmpty()) {
                         sender.spigot().sendMessage(new MineDown("[Error:](#ff3300) [There are no RTP destination groups currently configured!](#ff7e5e)").toComponent());
@@ -58,10 +58,10 @@ public class HuskBungeeRtpCommand implements CommandExecutor {
                             return true;
                         }
 
-                        sender.spigot().sendMessage(new MineDown("[HuskBungeeRTP](#00fb9a bold) [Current Plan servers:](#00fb9a)").toComponent());
+                        sender.spigot().sendMessage(new MineDown("[HuskBungeeRTP](#00fb9a bold) [| Total Plan play times for servers \\(in ticks, over " + HuskBungeeRTP.getSettings().getAveragePlayerCountDays() + "d\\):](#00fb9a)").toComponent());
                         for (String serverId : planPlayTimes.keySet()) {
                             Long playTime = planPlayTimes.get(serverId);
-                            sender.spigot().sendMessage(new MineDown("[•](#262626) [" + serverId + ":](#00fb9a show_text=&#00fb9a&The Server ID) [⌚" + playTime + "t](white show_text=&#00fb9a&The total play time, in ticks, according to the Plan database)").toComponent());
+                            sender.spigot().sendMessage(new MineDown("[•](#262626) [" + serverId + ":](#00fb9a show_text=&#00fb9a&ID of the server) [⌚" + playTime + " ticks](white show_text=&#00fb9a&The total play time, in ticks, according to the Plan database)").toComponent());
                         }
                     } else {
                         sender.spigot().sendMessage(new MineDown("[Error:](#ff3300) [The Player Analytics \\(Plan\\) integration is currently disabled.](#ff7e5e)").toComponent());

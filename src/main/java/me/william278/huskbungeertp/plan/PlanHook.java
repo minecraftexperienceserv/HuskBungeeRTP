@@ -24,8 +24,7 @@ public class PlanHook {
         try {
             return new PlanQueryAccessor(QueryService.getInstance());
         } catch (IllegalStateException planIsNotEnabled) {
-            // Plan is not enabled, handle exception
-            return null;
+            return null;  // Plan is not enabled, handle exception
         }
     }
 }
