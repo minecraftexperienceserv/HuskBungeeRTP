@@ -37,7 +37,7 @@ public class DefaultRtp extends AbstractRtp {
             boolean isLocationValid = isLocationSafe(randomLocation);
             if (!targetBiomeString.equalsIgnoreCase("ALL")) {
                 Biome targetBiome = Biome.valueOf(targetBiomeString);
-                if (world.getBiome(randomLocation) != targetBiome) {
+                if (world.getBiome(randomLocation.getBlockX(), randomLocation.getBlockY(), randomLocation.getBlockZ()) != targetBiome) {
                     isLocationValid = false;
                 }
             }

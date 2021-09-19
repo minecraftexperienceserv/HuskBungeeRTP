@@ -11,6 +11,8 @@ import me.william278.huskbungeertp.mysql.DataHandler;
 import me.william278.huskbungeertp.randomtp.processor.AbstractRtp;
 import me.william278.huskbungeertp.randomtp.processor.DefaultRtp;
 import me.william278.huskbungeertp.randomtp.processor.JakesRtp;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,6 +21,9 @@ import java.time.Instant;
 import java.util.*;
 
 public final class HuskBungeeRTP extends JavaPlugin {
+
+    // Metrics ID for bStats integration
+    private static final int METRICS_PLUGIN_ID = 12830;
 
     private static HuskBungeeRTP instance;
 
@@ -145,6 +150,15 @@ public final class HuskBungeeRTP extends JavaPlugin {
 
         // Jedis subscriber initialisation
         RedisMessenger.subscribe();
+
+        // bStats initialisation
+        try {
+            Metrics metrics = new Metrics(this, METRICS_PLUGIN_ID);
+            metrics.addCustomChart(new SimplePie("plan_integration", () -> Boolean.toString(usePlanIntegration())));
+            metrics.addCustomChart(new SimplePie("jakes_rtp", () -> Boolean.toString(abstractRtp instanceof JakesRtp)));
+        } catch (Exception e) {
+            getLogger().warning("An exception occurred initialising metrics; skipping.");
+        }
 
         // Log to console
         getLogger().info("Successfully enabled HuskBungeeRTP v" + getDescription().getVersion());

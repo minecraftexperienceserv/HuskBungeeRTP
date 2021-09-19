@@ -1,7 +1,7 @@
 name: HuskBungeeRTP
 version: ${project.version}
 main: me.william278.huskbungeertp.HuskBungeeRTP
-api-version: 1.17
+api-version: 1.16
 author: William278
 website: ${project.url}
 description: ${project.description}
@@ -16,11 +16,11 @@ commands:
     usage: /rtp [player] [group] [biome]
     description: Randomly teleport a player
     permission: huskrtp.command.rtp
+    aliases: [brtp, hbrtp, randomtp]
   huskbungeertp:
     usage: /huskbungeertp <about/groups/plan/reload>
     description: View and manage plugin details
     permission: huskrtp.command.admin
-    aliases: [hbrtp, bungeertp, brtp]
 permissions:
   huskrtp.*:
     description: Lets you use all HuskBungeeRTP commands
