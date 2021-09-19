@@ -10,7 +10,7 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        Player p = e.getPlayer();
+        final Player p = e.getPlayer();
         DataHandler.addPlayerIfNotExist(p.getUniqueId());
     }
 
