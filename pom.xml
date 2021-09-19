@@ -6,7 +6,7 @@
 
     <groupId>me.William278</groupId>
     <artifactId>HuskBungeeRTP</artifactId>
-    <version>0.3</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <name>HuskBungeeRTP</name>
