@@ -1,5 +1,6 @@
 package me.william278.huskbungeertp;
 
+import me.william278.huskbungeertp.command.HuskBungeeRtpCommand;
 import me.william278.huskbungeertp.command.RtpCommand;
 import me.william278.huskbungeertp.config.Group;
 import me.william278.huskbungeertp.config.Settings;
@@ -82,7 +83,7 @@ public final class HuskBungeeRTP extends JavaPlugin {
     }
 
     public static void fetchPlanIfNeeded() {
-        if (lastPlanFetch + (getSettings().getUpdatePlanDataHours() * 60L) <= Instant.now().getEpochSecond()) {
+        if ((lastPlanFetch + (getSettings().getUpdatePlanDataMinutes() * 60L)) <= Instant.now().getEpochSecond()) {
             updatePlanPlayTimes();
         }
     }
@@ -131,6 +132,8 @@ public final class HuskBungeeRTP extends JavaPlugin {
         // Register command
         Objects.requireNonNull(getCommand("rtp")).setExecutor(new RtpCommand());
         Objects.requireNonNull(getCommand("rtp")).setTabCompleter(new RtpCommand.RtpTabCompleter());
+        Objects.requireNonNull(getCommand("huskbungeertp")).setExecutor(new HuskBungeeRtpCommand());
+        Objects.requireNonNull(getCommand("huskbungeertp")).setTabCompleter(new HuskBungeeRtpCommand.HuskBungeeRtpTabCompleter());
 
         // Register events
         getServer().getPluginManager().registerEvents(new EventListener(), this);

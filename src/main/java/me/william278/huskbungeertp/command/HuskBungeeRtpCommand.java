@@ -7,10 +7,10 @@ import me.william278.huskbungeertp.config.Group;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+import org.bukkit.util.StringUtil;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.StringJoiner;
+import java.util.*;
 
 public class HuskBungeeRtpCommand implements CommandExecutor {
 
@@ -26,7 +26,7 @@ public class HuskBungeeRtpCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 1) {
             switch (args[0].toLowerCase()) {
-                case "about" -> sender.spigot().sendMessage(new MineDown(PLUGIN_INFORMATION.toString()).toComponent());
+                case "about", "info" -> sender.spigot().sendMessage(new MineDown(PLUGIN_INFORMATION.toString()).toComponent());
                 case "groups" -> {
                     sender.spigot().sendMessage(new MineDown("[HuskBungeeRTP](#00fb9a bold) [Available groups:](#00fb9a)").toComponent());
                     HashSet<Group> groups = HuskBungeeRTP.getSettings().getGroups();
@@ -44,7 +44,7 @@ public class HuskBungeeRtpCommand implements CommandExecutor {
                 }
                 case "plan" -> {
                     if (HuskBungeeRTP.usePlanIntegration()) {
-                        HashMap<String,Long> planPlayTimes = HuskBungeeRTP.getPlanPlayTimes();
+                        HashMap<String, Long> planPlayTimes = HuskBungeeRTP.getPlanPlayTimes();
                         if (planPlayTimes == null) {
                             sender.spigot().sendMessage(new MineDown("[Error:](#ff3300) [Failed to retrieve the Plan play times.](#ff7e5e)").toComponent());
                             return true;
@@ -72,5 +72,26 @@ public class HuskBungeeRtpCommand implements CommandExecutor {
             MessageManager.sendMessage(sender, "error_invalid_syntax", command.getUsage());
         }
         return true;
+    }
+
+    public static class HuskBungeeRtpTabCompleter implements TabCompleter {
+
+        private static final String[] commandTabArgs = {"about", "groups", "plan", "reload"};
+
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+            if (command.getPermission() != null) {
+                if (!sender.hasPermission(command.getPermission())) {
+                    return Collections.emptyList();
+                }
+            }
+            if (args.length == 0 || args.length == 1) {
+                final List<String> tabCompletions = new ArrayList<>();
+                StringUtil.copyPartialMatches(args[0], Arrays.asList(commandTabArgs), tabCompletions);
+                Collections.sort(tabCompletions);
+                return tabCompletions;
+            }
+            return Collections.emptyList();
+        }
     }
 }

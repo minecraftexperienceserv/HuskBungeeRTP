@@ -22,7 +22,7 @@ public class Settings {
     private final String redisPassword;
 
     // General options
-    private final int updatePlanDataHours;
+    private final int updatePlanDataMinutes;
     private final int averagePlayerCountDays;
     private final String serverId;
     private final boolean usePlan;
@@ -46,7 +46,7 @@ public class Settings {
         redisPort = config.getInt("redis_credentials.port", 3306);
         redisPassword = config.getString("redis_credentials.password", "");
 
-        updatePlanDataHours = config.getInt("update_plan_data_hours", 1);
+        updatePlanDataMinutes = config.getInt("update_plan_data_minutes", 1);
         averagePlayerCountDays = config.getInt("average_player_count_days", 7);
         serverId = config.getString("this_server_id", "server1");
         usePlan = config.getBoolean("use_plan", false);
@@ -115,7 +115,7 @@ public class Settings {
 
     public String getRedisPassword() { return redisPassword; }
 
-    public int getUpdatePlanDataHours() { return updatePlanDataHours; }
+    public int getUpdatePlanDataMinutes() { return updatePlanDataMinutes; }
 
     public boolean isUsePlan() {
         return usePlan;
