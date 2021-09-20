@@ -35,8 +35,10 @@ public class JakesRtp extends AbstractRtp {
                     break;
                 }
             }
+        } catch (NullPointerException e) {
+            HuskBungeeRTP.getInstance().getLogger().info("Skipped caching JakesRTP random locations as this server is not a group target.");
         } catch (Exception e) {
-            HuskBungeeRTP.getInstance().getLogger().log(Level.SEVERE, "An exception occurred caching JakesRTP random locations!", e);
+            HuskBungeeRTP.getInstance().getLogger().log(Level.WARNING, "An exception occurred caching JakesRTP random locations!", e);
         }
     }
 
