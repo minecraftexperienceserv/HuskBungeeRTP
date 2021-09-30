@@ -26,6 +26,7 @@ public class Settings {
     private final boolean useLastRtpLocationOnCoolDown;
     private final String defaultRtpDestinationGroup;
     private final int maxRtpAttempts;
+    private final boolean debugLogging;
 
     // Load Balancing
     private final LoadBalancingMethod loadBalancingMethod;
@@ -56,6 +57,7 @@ public class Settings {
         useLastRtpLocationOnCoolDown = config.getBoolean("last_rtp_on_cooldown", true);
         defaultRtpDestinationGroup = config.getString("default_rtp_group", "group1");
         maxRtpAttempts = config.getInt("max_rtp_attempts", 10);
+        debugLogging = config.getBoolean("debug_logging", false);
 
         groups = getGroups(config);
     }
@@ -134,6 +136,10 @@ public class Settings {
 
     public boolean isUseLastRtpLocationOnCoolDown() {
         return useLastRtpLocationOnCoolDown;
+    }
+
+    public boolean doDebugLogging() {
+        return debugLogging;
     }
 
     public String getServerId() {

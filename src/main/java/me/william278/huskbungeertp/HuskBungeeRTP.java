@@ -17,8 +17,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public final class HuskBungeeRTP extends JavaPlugin {
 
@@ -40,6 +46,8 @@ public final class HuskBungeeRTP extends JavaPlugin {
     private void setSettings(Configuration config) {
         settings = new Settings(config);
     }
+
+    public static Logger rtpLogger;
 
     public static HashMap<String,Integer> serverPlayerCounts = new HashMap<>();
     public static void updateServerPlayerCounts() {
@@ -82,6 +90,23 @@ public final class HuskBungeeRTP extends JavaPlugin {
             abstractRtp = new DefaultRtp();
         }
         abstractRtp.initialize();
+    }
+
+    private void setupLogger() {
+        rtpLogger = Logger.getLogger("RTPLogger");
+        FileHandler loggerFile;
+
+        try {
+            loggerFile = new FileHandler(getDataFolder().getAbsolutePath() + File.separator + "RTPLogger.log");
+            rtpLogger.addHandler(loggerFile);
+            SimpleFormatter formatter = new SimpleFormatter();
+            loggerFile.setFormatter(formatter);
+            rtpLogger.info("Server " + getSettings().getServerId() + " initialized.");
+        } catch (SecurityException e) {
+            getLogger().log(Level.WARNING, "A logger SecurityException has occurred", e);
+        } catch (IOException i) {
+            getLogger().log(Level.WARNING, "A logger IOException has occurred", i);
+        }
     }
 
     @Override
@@ -135,6 +160,11 @@ public final class HuskBungeeRTP extends JavaPlugin {
             metrics.addCustomChart(new SimplePie("jakes_rtp", () -> Boolean.toString(abstractRtp instanceof JakesRtp)));
         } catch (Exception e) {
             getLogger().warning("An exception occurred initialising metrics; skipping.");
+        }
+
+        // Setup debug logger
+        if (getSettings().doDebugLogging()) {
+            setupLogger();
         }
 
         // Log to console

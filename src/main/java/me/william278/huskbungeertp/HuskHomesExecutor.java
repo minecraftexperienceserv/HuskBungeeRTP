@@ -1,10 +1,12 @@
 package me.william278.huskbungeertp;
 
+import me.william278.huskbungeertp.config.Settings;
 import me.william278.huskhomes2.api.HuskHomesAPI;
 import me.william278.huskhomes2.teleport.points.TeleportationPoint;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.StringJoiner;
 import java.util.logging.Level;
 
 public class HuskHomesExecutor {
@@ -17,7 +19,18 @@ public class HuskHomesExecutor {
             return;
         }
         HuskHomesAPI.getInstance().teleportPlayer(player, point, true);
-        plugin.getLogger().info("Teleported " + player.getName() + " to server: " + point.getServer() + " (world: " + point.getWorldName() + ")");
+        if (HuskBungeeRTP.getSettings().doDebugLogging()) {
+            if (HuskBungeeRTP.getSettings().getLoadBalancingMethod() == Settings.LoadBalancingMethod.PLAYER_COUNTS) {
+                HuskBungeeRTP.rtpLogger.info("RTP - Teleported " + player.getName() + " to server: " + point.getServer() + " (world: " + point.getWorldName() + ", with " + HuskBungeeRTP.serverPlayerCounts.get(point.getServer()) + " players online)");
+                StringJoiner playersOnlineJoiner = new StringJoiner(" | ");
+                for (String server : HuskBungeeRTP.serverPlayerCounts.keySet()) {
+                    playersOnlineJoiner.add(server + ": " + HuskBungeeRTP.serverPlayerCounts.get(server));
+                }
+                HuskBungeeRTP.rtpLogger.info("--> Player counts: " + playersOnlineJoiner);
+            } else {
+                HuskBungeeRTP.rtpLogger.info("RTP - Teleported " + player.getName() + " to server: " + point.getServer() + " (world: " + point.getWorldName() + ")");
+            }
+        }
     }
 
 }
