@@ -22,13 +22,15 @@ public class Settings {
     private final String redisPassword;
 
     // General options
-    private final int updatePlanDataMinutes;
-    private final int averagePlayerCountDays;
     private final String serverId;
-    private final boolean usePlan;
     private final boolean useLastRtpLocationOnCoolDown;
     private final String defaultRtpDestinationGroup;
     private final int maxRtpAttempts;
+
+    // Load Balancing
+    private final LoadBalancingMethod loadBalancingMethod;
+    private final int planUpdateFrequencyMinutes;
+    private final int planAveragePlayerCountDays;
 
     // Group configuration
     private final HashSet<Group> groups;
@@ -46,10 +48,11 @@ public class Settings {
         redisPort = config.getInt("redis_credentials.port", 3306);
         redisPassword = config.getString("redis_credentials.password", "");
 
-        updatePlanDataMinutes = config.getInt("update_plan_data_minutes", 1);
-        averagePlayerCountDays = config.getInt("average_player_count_days", 7);
+        loadBalancingMethod = LoadBalancingMethod.valueOf(config.getString("load_balancing.method", "random").toUpperCase());
+        planUpdateFrequencyMinutes = config.getInt("load_balancing.plan.update_frequency_mins", 1);
+        planAveragePlayerCountDays = config.getInt("load_balancing.plan.average_player_count_days", 7);
+
         serverId = config.getString("this_server_id", "server1");
-        usePlan = config.getBoolean("use_plan", false);
         useLastRtpLocationOnCoolDown = config.getBoolean("last_rtp_on_cooldown", true);
         defaultRtpDestinationGroup = config.getString("default_rtp_group", "group1");
         maxRtpAttempts = config.getInt("max_rtp_attempts", 10);
@@ -115,18 +118,18 @@ public class Settings {
 
     public String getRedisPassword() { return redisPassword; }
 
-    public int getUpdatePlanDataMinutes() { return updatePlanDataMinutes; }
+    public int getPlanUpdateFrequencyMinutes() { return planUpdateFrequencyMinutes; }
 
-    public boolean isUsePlan() {
-        return usePlan;
+    public LoadBalancingMethod getLoadBalancingMethod() {
+        return loadBalancingMethod;
     }
 
     public Group getDefaultRtpDestinationGroup() {
         return getGroupById(defaultRtpDestinationGroup);
     }
 
-    public long getAveragePlayerCountDays() {
-        return averagePlayerCountDays;
+    public long getPlanAveragePlayerCountDays() {
+        return planAveragePlayerCountDays;
     }
 
     public boolean isUseLastRtpLocationOnCoolDown() {
@@ -135,6 +138,16 @@ public class Settings {
 
     public String getServerId() {
         return serverId;
+    }
+
+    public HashSet<String> getAllServers() {
+        final HashSet<String> servers = new HashSet<>();
+        for (Group group : getGroups()) {
+            for (Group.Server server : group.getServers()) {
+                servers.add(server.getName());
+            }
+        }
+        return servers;
     }
 
     public HashSet<Group> getGroups() {
@@ -171,5 +184,11 @@ public class Settings {
 
     public int getMaxRtpAttempts() {
         return maxRtpAttempts;
+    }
+
+    public enum LoadBalancingMethod {
+        PLAN,
+        PLAYER_COUNTS,
+        RANDOM
     }
 }

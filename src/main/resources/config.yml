@@ -10,11 +10,13 @@ redis_credentials:
   host: localhost
   port: 6379
   password:
-average_player_count_days: 7
+load_balancing:
+  method: random
+  plan:
+    average_player_count_days: 7
+    update_frequency_mins: 1
 max_rtp_attempts: 10
-update_plan_data_minutes: 1
 this_server_id: server1
-use_plan: false
 last_rtp_on_cooldown: true
 default_rtp_group: group1
 groups:

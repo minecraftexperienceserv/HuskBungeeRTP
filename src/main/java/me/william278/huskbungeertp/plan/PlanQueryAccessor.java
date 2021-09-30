@@ -51,7 +51,7 @@ public record PlanQueryAccessor(QueryService queryService) {
             }
             long playtime = queryService.query(GET_SESSION_TOTAL_WITHIN_DAY_LIMIT_SQL, statement -> {
                 statement.setString(1, serverUUID.toString());
-                statement.setLong(2, (System.currentTimeMillis() - (TimeUnit.DAYS.toMillis(HuskBungeeRTP.getSettings().getAveragePlayerCountDays()))));
+                statement.setLong(2, (System.currentTimeMillis() - (TimeUnit.DAYS.toMillis(HuskBungeeRTP.getSettings().getPlanAveragePlayerCountDays()))));
                 statement.setLong(3, System.currentTimeMillis());
                 try (ResultSet set = statement.executeQuery()) {
                     return set.next() ? set.getLong("playtime") : -1L;

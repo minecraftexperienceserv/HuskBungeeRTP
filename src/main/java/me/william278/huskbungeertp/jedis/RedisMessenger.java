@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 
+import java.time.Instant;
 import java.util.UUID;
 
 public class RedisMessenger {
@@ -111,6 +112,19 @@ public class RedisMessenger {
                                 new TeleportationPoint(locationWorld, locationX, locationY, locationZ, 0F, 0F, sourceServer));
                     }}
 
+            }
+            case GET_PLAYER_COUNT -> {
+                final String sourceServer = messageData[0];
+                final long requestTime = Long.parseLong(messageData[1]);
+
+                publish(new RedisMessage(sourceServer, RedisMessage.RedisMessageType.RETURN_PLAYER_COUNT,
+                        HuskBungeeRTP.getSettings().getServerId() + "#" + Bukkit.getOnlinePlayers().size()));
+            }
+            case RETURN_PLAYER_COUNT -> {
+                final String sourceServer = messageData[0];
+                final int sourcePlayerCount = Integer.parseInt(messageData[1]);
+
+                HuskBungeeRTP.serverPlayerCounts.put(sourceServer, sourcePlayerCount);
             }
         }
     }

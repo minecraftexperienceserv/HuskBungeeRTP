@@ -23,6 +23,8 @@ public record RedisMessage(String targetServer,
     public enum RedisMessageType {
         REQUEST_RANDOM_LOCATION,
         REPLY_RANDOM_LOCATION,
-        REPLY_RANDOM_FAILED
+        REPLY_RANDOM_FAILED,
+        GET_PLAYER_COUNT,
+        RETURN_PLAYER_COUNT
     }
 }

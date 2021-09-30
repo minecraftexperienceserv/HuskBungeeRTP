@@ -4,8 +4,8 @@ import me.william278.huskbungeertp.command.HuskBungeeRtpCommand;
 import me.william278.huskbungeertp.command.RtpCommand;
 import me.william278.huskbungeertp.config.Group;
 import me.william278.huskbungeertp.config.Settings;
-import me.william278.huskbungeertp.plan.PlanHook;
-import me.william278.huskbungeertp.plan.PlanQueryAccessor;
+import me.william278.huskbungeertp.jedis.RedisMessage;
+import me.william278.huskbungeertp.plan.PlanDataManager;
 import me.william278.huskbungeertp.jedis.RedisMessenger;
 import me.william278.huskbungeertp.mysql.DataHandler;
 import me.william278.huskbungeertp.randomtp.processor.AbstractRtp;
@@ -41,25 +41,20 @@ public final class HuskBungeeRTP extends JavaPlugin {
         settings = new Settings(config);
     }
 
-    private static long lastPlanFetch;
-    private static boolean usePlan = false;
-    private static HashMap<String, Long> planPlayTimes = new HashMap<>();
-
-    public static HashMap<String,Long> getPlanPlayTimes() {
-        return planPlayTimes;
+    public static HashMap<String,Integer> serverPlayerCounts = new HashMap<>();
+    public static void updateServerPlayerCounts() {
+        for (String server : getSettings().getAllServers()) {
+            RedisMessenger.publish(new RedisMessage(server, RedisMessage.RedisMessageType.GET_PLAYER_COUNT,
+                    getSettings().getServerId() + "#" + Instant.now().getEpochSecond()));
+        }
     }
-
-    public static boolean usePlanIntegration() {
-        return usePlan;
-    }
-
-    public static HashSet<String> getServerIdsWithLowestPlayTime(Collection<Group.Server> servers) {
+    public static HashSet<String> getServerIdsWithFewestPlayers(Collection<Group.Server> servers) {
         HashSet<String> lowestIdServers = new HashSet<>();
         long lowestPlayTime = Long.MAX_VALUE;
         for (Group.Server server : servers) {
-            if (planPlayTimes.containsKey(server.getName())) {
+            if (serverPlayerCounts.containsKey(server.getName())) {
                 String serverName = server.getName();
-                long playTime = planPlayTimes.get(serverName);
+                long playTime = serverPlayerCounts.get(serverName);
                 if (playTime < lowestPlayTime) {
                     lowestPlayTime = playTime;
                     lowestIdServers.clear();
@@ -68,29 +63,10 @@ public final class HuskBungeeRTP extends JavaPlugin {
                     lowestIdServers.add(serverName);
                 }
             } else {
-                getInstance().getLogger().warning("A server in a RTP group failed to return Plan playtime data.");
+                HuskBungeeRTP.getInstance().getLogger().warning("A server in a RTP group failed to return play count data.");
             }
         }
         return lowestIdServers;
-    }
-
-    public static void updatePlanPlayTimes() {
-        try {
-            Optional<PlanQueryAccessor> planHook = new PlanHook().hookIntoPlan();
-            planHook.ifPresent(hook -> {
-                usePlan = true;
-                planPlayTimes = hook.getPlayTimes();
-                getInstance().getLogger().info("Fetched latest playtime data from Plan");
-            });
-            lastPlanFetch = Instant.now().getEpochSecond();
-        } catch (NoClassDefFoundError ignored) {
-        }
-    }
-
-    public static void fetchPlanIfNeeded() {
-        if ((lastPlanFetch + (getSettings().getUpdatePlanDataMinutes() * 60L)) <= Instant.now().getEpochSecond()) {
-            updatePlanPlayTimes();
-        }
     }
 
     private static AbstractRtp abstractRtp;
@@ -143,9 +119,10 @@ public final class HuskBungeeRTP extends JavaPlugin {
         // Register events
         getServer().getPluginManager().registerEvents(new EventListener(), this);
 
-        // Use plan integration if enabled
-        if (getSettings().isUsePlan()) {
-            updatePlanPlayTimes();
+        // Setup plan integration / fetch player counts
+        switch (getSettings().getLoadBalancingMethod()) {
+            case PLAN -> PlanDataManager.updatePlanPlayTimes();
+            case PLAYER_COUNTS -> updateServerPlayerCounts();
         }
 
         // Jedis subscriber initialisation
@@ -154,7 +131,7 @@ public final class HuskBungeeRTP extends JavaPlugin {
         // bStats initialisation
         try {
             Metrics metrics = new Metrics(this, METRICS_PLUGIN_ID);
-            metrics.addCustomChart(new SimplePie("plan_integration", () -> Boolean.toString(usePlanIntegration())));
+            metrics.addCustomChart(new SimplePie("plan_integration", () -> Boolean.toString(PlanDataManager.usePlanIntegration())));
             metrics.addCustomChart(new SimplePie("jakes_rtp", () -> Boolean.toString(abstractRtp instanceof JakesRtp)));
         } catch (Exception e) {
             getLogger().warning("An exception occurred initialising metrics; skipping.");

@@ -4,6 +4,7 @@ import de.themoep.minedown.MineDown;
 import me.william278.huskbungeertp.HuskBungeeRTP;
 import me.william278.huskbungeertp.MessageManager;
 import me.william278.huskbungeertp.config.Group;
+import me.william278.huskbungeertp.plan.PlanDataManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -47,8 +48,8 @@ public class HuskBungeeRtpCommand implements CommandExecutor {
                     }
                 }
                 case "plan" -> {
-                    if (HuskBungeeRTP.usePlanIntegration()) {
-                        HashMap<String, Long> planPlayTimes = HuskBungeeRTP.getPlanPlayTimes();
+                    if (PlanDataManager.usePlanIntegration()) {
+                        HashMap<String, Long> planPlayTimes = PlanDataManager.getPlanPlayTimes();
                         if (planPlayTimes == null) {
                             sender.spigot().sendMessage(new MineDown("[Error:](#ff3300) [Failed to retrieve the Plan play times.](#ff7e5e)").toComponent());
                             return true;
@@ -58,7 +59,7 @@ public class HuskBungeeRtpCommand implements CommandExecutor {
                             return true;
                         }
 
-                        sender.spigot().sendMessage(new MineDown("[HuskBungeeRTP](#00fb9a bold) [| Total Plan play times for servers \\(in ticks, over " + HuskBungeeRTP.getSettings().getAveragePlayerCountDays() + "d\\):](#00fb9a)").toComponent());
+                        sender.spigot().sendMessage(new MineDown("[HuskBungeeRTP](#00fb9a bold) [| Total Plan play times for servers \\(in ticks, over " + HuskBungeeRTP.getSettings().getPlanAveragePlayerCountDays() + "d\\):](#00fb9a)").toComponent());
                         for (String serverId : planPlayTimes.keySet()) {
                             Long playTime = planPlayTimes.get(serverId);
                             sender.spigot().sendMessage(new MineDown("[•](#262626) [" + serverId + ":](#00fb9a show_text=&#00fb9a&ID of the server) [⌚" + playTime + " ticks](white show_text=&#00fb9a&The total play time, in ticks, according to the Plan database)").toComponent());
