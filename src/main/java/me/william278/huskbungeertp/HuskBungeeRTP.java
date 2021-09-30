@@ -43,23 +43,23 @@ public final class HuskBungeeRTP extends JavaPlugin {
 
     public static HashMap<String,Integer> serverPlayerCounts = new HashMap<>();
     public static void updateServerPlayerCounts() {
-        for (String server : getSettings().getAllServers()) {
+        for (String server : getSettings().getAllServerIds()) {
             RedisMessenger.publish(new RedisMessage(server, RedisMessage.RedisMessageType.GET_PLAYER_COUNT,
                     getSettings().getServerId() + "#" + Instant.now().getEpochSecond()));
         }
     }
     public static HashSet<String> getServerIdsWithFewestPlayers(Collection<Group.Server> servers) {
         HashSet<String> lowestIdServers = new HashSet<>();
-        long lowestPlayTime = Long.MAX_VALUE;
+        int lowestPlayerCount = Integer.MAX_VALUE;
         for (Group.Server server : servers) {
             if (serverPlayerCounts.containsKey(server.getName())) {
                 String serverName = server.getName();
-                long playTime = serverPlayerCounts.get(serverName);
-                if (playTime < lowestPlayTime) {
-                    lowestPlayTime = playTime;
+                int playerCount = serverPlayerCounts.get(serverName);
+                if (playerCount < lowestPlayerCount) {
+                    lowestPlayerCount = playerCount;
                     lowestIdServers.clear();
                     lowestIdServers.add(serverName);
-                } else if (playTime == lowestPlayTime) {
+                } else if (playerCount == lowestPlayerCount) {
                     lowestIdServers.add(serverName);
                 }
             } else {

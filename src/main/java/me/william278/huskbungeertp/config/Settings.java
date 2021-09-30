@@ -140,7 +140,7 @@ public class Settings {
         return serverId;
     }
 
-    public HashSet<String> getAllServers() {
+    public HashSet<String> getAllServerIds() {
         final HashSet<String> servers = new HashSet<>();
         for (Group group : getGroups()) {
             for (Group.Server server : group.getServers()) {

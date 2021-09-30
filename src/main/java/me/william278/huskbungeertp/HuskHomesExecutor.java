@@ -9,12 +9,15 @@ import java.util.logging.Level;
 
 public class HuskHomesExecutor {
 
+    private static final HuskBungeeRTP plugin = HuskBungeeRTP.getInstance();
+
     public static void teleportPlayer(Player player, TeleportationPoint point) {
         if (Bukkit.getPluginManager().getPlugin("HuskHomes") == null) {
-            Bukkit.getLogger().log(Level.SEVERE, "Could not find HuskHomes! Please install HuskHomes!");
+            plugin.getLogger().log(Level.SEVERE, "Could not find HuskHomes! Please install HuskHomes!");
             return;
         }
         HuskHomesAPI.getInstance().teleportPlayer(player, point, true);
+        plugin.getLogger().info("Teleported " + player.getName() + " to server: " + point.getServer() + " (world: " + point.getWorldName() + ")");
     }
 
 }

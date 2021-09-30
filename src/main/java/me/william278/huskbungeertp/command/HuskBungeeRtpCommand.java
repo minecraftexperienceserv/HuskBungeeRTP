@@ -4,6 +4,7 @@ import de.themoep.minedown.MineDown;
 import me.william278.huskbungeertp.HuskBungeeRTP;
 import me.william278.huskbungeertp.MessageManager;
 import me.william278.huskbungeertp.config.Group;
+import me.william278.huskbungeertp.config.Settings;
 import me.william278.huskbungeertp.plan.PlanDataManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -61,11 +62,31 @@ public class HuskBungeeRtpCommand implements CommandExecutor {
 
                         sender.spigot().sendMessage(new MineDown("[HuskBungeeRTP](#00fb9a bold) [| Total Plan play times for servers \\(in ticks, over " + HuskBungeeRTP.getSettings().getPlanAveragePlayerCountDays() + "d\\):](#00fb9a)").toComponent());
                         for (String serverId : planPlayTimes.keySet()) {
-                            Long playTime = planPlayTimes.get(serverId);
+                            long playTime = planPlayTimes.get(serverId);
                             sender.spigot().sendMessage(new MineDown("[•](#262626) [" + serverId + ":](#00fb9a show_text=&#00fb9a&ID of the server) [⌚" + playTime + " ticks](white show_text=&#00fb9a&The total play time, in ticks, according to the Plan database)").toComponent());
                         }
                     } else {
                         sender.spigot().sendMessage(new MineDown("[Error:](#ff3300) [The Player Analytics \\(Plan\\) integration is currently disabled.](#ff7e5e)").toComponent());
+                    }
+                }
+                case "playercounts" -> {
+                    if (HuskBungeeRTP.getSettings().getLoadBalancingMethod() == Settings.LoadBalancingMethod.PLAYER_COUNTS) {
+                        HashMap<String,Integer> playerCounts = HuskBungeeRTP.serverPlayerCounts;
+                        if (playerCounts == null) {
+                            sender.spigot().sendMessage(new MineDown("[Error:](#ff3300) [Failed to retrieve the player counts.](#ff7e5e)").toComponent());
+                            return true;
+                        }
+                        if (playerCounts.isEmpty()) {
+                            sender.spigot().sendMessage(new MineDown("[Error:](#ff3300) [Could not find any servers; are your groups setup in your config?](#ff7e5e)").toComponent());
+                            return true;
+                        }
+                        sender.spigot().sendMessage(new MineDown("[HuskBungeeRTP](#00fb9a bold) [| Current player counts on your network):](#00fb9a)").toComponent());
+                        for (String serverId : playerCounts.keySet()) {
+                            int playerCount = playerCounts.get(serverId);
+                            sender.spigot().sendMessage(new MineDown("[•](#262626) [" + serverId + ":](#00fb9a show_text=&#00fb9a&ID of the server) [☻" + playerCount + " players](white show_text=&#00fb9a&The number of players on this server)").toComponent());
+                        }
+                    } else {
+                        sender.spigot().sendMessage(new MineDown("[Error:](#ff3300) [You do not have player count mode set for the load balancer](#ff7e5e)").toComponent());
                     }
                 }
                 case "reload" -> {
@@ -81,7 +102,7 @@ public class HuskBungeeRtpCommand implements CommandExecutor {
 
     public static class HuskBungeeRtpTabCompleter implements TabCompleter {
 
-        private static final String[] commandTabArgs = {"about", "groups", "plan", "reload"};
+        private static final String[] commandTabArgs = {"about", "groups", "plan", "playercounts", "reload"};
 
         @Override
         public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
