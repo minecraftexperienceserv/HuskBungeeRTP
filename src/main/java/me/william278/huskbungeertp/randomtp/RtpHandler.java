@@ -15,6 +15,7 @@ import org.bukkit.World;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Player;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -23,12 +24,50 @@ import java.util.UUID;
 public class RtpHandler {
 
     private static final HuskBungeeRTP plugin = HuskBungeeRTP.getInstance();
-    public static HashSet<UUID> rtpUsers = new HashSet<>();
+    public static HashSet<ProcessingRandomTeleport> rtpUsers = new HashSet<>();
+
+    public static boolean isPlayerRtpProcessing(UUID uuid) {
+        HashSet<ProcessingRandomTeleport> teleports = new HashSet<>(rtpUsers);
+        for (ProcessingRandomTeleport teleport : teleports) {
+            if (teleport.uuid.equals(uuid)) {
+                if (teleport.hasTimedOut()) {
+                    removeRtpUser(uuid);
+                    return false;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void removeRtpUser(UUID uuid) {
+        HashSet<ProcessingRandomTeleport> teleports = new HashSet<>(rtpUsers);
+        for (ProcessingRandomTeleport teleport : teleports) {
+            if (teleport.uuid.equals(uuid)) {
+                rtpUsers.remove(teleport);
+                return;
+            }
+        }
+    }
+
+    public static class ProcessingRandomTeleport {
+        private final long timeOutTime;
+        public final UUID uuid;
+
+        public ProcessingRandomTeleport(UUID uuid) {
+            this.uuid = uuid;
+            this.timeOutTime = Instant.now().getEpochSecond() + HuskBungeeRTP.getSettings().getRtpTimeOutSeconds();
+        }
+
+        public boolean hasTimedOut() {
+            return Instant.now().getEpochSecond() >= timeOutTime;
+        }
+    }
 
     public static void processRtp(Player player, RtpProfile profile) {
         final UUID uuid = player.getUniqueId();
         final boolean canBypassCoolDown = player.hasPermission("huskrtp.bypass_cooldown");
-        if (rtpUsers.contains(uuid)) {
+        if (isPlayerRtpProcessing(uuid)) {
             MessageManager.sendMessage(player, "error_already_rtping");
             return;
         }
@@ -55,7 +94,7 @@ public class RtpHandler {
                 return;
             }
             MessageManager.sendMessage(player, "processing_rtp");
-            rtpUsers.add(uuid);
+            rtpUsers.add(new ProcessingRandomTeleport(uuid));
 
             Group.Server targetServer = determineTargetServer(profile.getDestinationGroup().getServers());
             String targetWorld = determineTargetWorld(targetServer);
@@ -75,12 +114,12 @@ public class RtpHandler {
                     AbstractRtp.RandomResult result = HuskBungeeRTP.getAbstractRtp().getRandomLocation(targetLocalWorld, finalTargetBiome);
                     if (!result.successful()) {
                         MessageManager.sendMessage(player, "error_rtp_failed", Integer.toString(result.attemptsTaken()));
-                        rtpUsers.remove(uuid);
+                        removeRtpUser(uuid);
                         return;
                     }
                     final TeleportationPoint targetPoint = new TeleportationPoint(result.location(), targetServer.getName());
                     HuskHomesExecutor.teleportPlayer(player, targetPoint);
-                    rtpUsers.remove(uuid);
+                    removeRtpUser(uuid);
 
                     // Apply cool down
                     if (!canBypassCoolDown) {

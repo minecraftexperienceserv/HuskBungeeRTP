@@ -63,8 +63,8 @@ public class RedisMessenger {
                 Player player = Bukkit.getPlayer(originPlayerUUID);
                 if (player != null) {
                     MessageManager.sendMessage(player, "error_rtp_failed", Integer.toString(attemptsTaken));
-                    RtpHandler.rtpUsers.remove(player.getUniqueId());
                 }
+                RtpHandler.removeRtpUser(originPlayerUUID);
             }
             case REQUEST_RANDOM_LOCATION -> {
                 // An incoming request that this server find and return a random location
@@ -103,13 +103,14 @@ public class RedisMessenger {
                 if (player != null) {
                     HuskHomesExecutor.teleportPlayer(player, new TeleportationPoint(
                             locationWorld, locationX, locationY, locationZ, 0F, 0F, sourceServer));
-                    RtpHandler.rtpUsers.remove(player.getUniqueId());
 
                     // Apply cool down
                     if (!player.hasPermission("huskrtp.bypass_cooldown")) {
                         DataHandler.setPlayerOnCoolDown(originPlayerUUID, HuskBungeeRTP.getSettings().getGroupById(destinationGroupId),
                                 new TeleportationPoint(locationWorld, locationX, locationY, locationZ, 0F, 0F, sourceServer));
-                    }}
+                    }
+                }
+                RtpHandler.removeRtpUser(originPlayerUUID);
 
             }
             case GET_PLAYER_COUNT -> {

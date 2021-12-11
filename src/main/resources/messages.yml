@@ -10,4 +10,5 @@ error_cooldown_seconds: '[Error:](#ff3300) [You must wait ⌚ %1% seconds before
 last_rtp_cooldown_minutes: '[Random teleporting is on cooldown for ⌚ %1% minute\(s\). Returning to your last RTP location...](gray)'
 last_rtp_cooldown_seconds: '[Random teleporting is on cooldown for ⌚ %1% second\(s\). Returning to your last RTP location...](gray)'
 processing_rtp: '[Finding a safe random location to teleport you...](gray)'
+error_rtp_timeout: '[Error:](#ff3300) [The random teleport timed out. Please try again.](#ff7e5e) [\(� Help\)](gray show_text=&7Perhaps the target server was not online, or you failed to connect.)'
 error_rtp_failed: '[Error:](#ff3300) [Failed to find a location in %1% attempts! Please try again.](#ff7e5e) [\(� Help\)](gray show_text=&7The server could not find a safe spot to put you within %1% tries. Perhaps there is no safe ground, or you are trying this in a void world, or you have set an uncommon, inaccessible or unsafe biome as a target.)'
