@@ -173,6 +173,9 @@ public final class HuskBungeeRTP extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        // Close the database connection
+        DataHandler.closeDatabase();
+
         // Plugin shutdown logic
         getLogger().info("Disabled HuskBungeeRTP v" + getDescription().getVersion());
     }

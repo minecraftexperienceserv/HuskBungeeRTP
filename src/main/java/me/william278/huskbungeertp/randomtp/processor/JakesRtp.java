@@ -51,7 +51,7 @@ public class JakesRtp extends AbstractRtp {
                 location = randomTeleporter.getRtpLocation(randomTeleporter.getRtpSettingsByWorld(world), world.getSpawnLocation(), true);
                 return new RandomResult(location, true, 1);
             } else {
-                Biome targetBiome = Biome.valueOf(targetBiomeString);
+                final Biome targetBiome = Biome.valueOf(targetBiomeString);
                 int attempts;
                 for (attempts = 0; attempts < maxAttempts; attempts++) {
                     location = randomTeleporter.getRtpLocation(randomTeleporter.getRtpSettingsByWorld(world), world.getSpawnLocation(), true);

@@ -6,6 +6,12 @@ mysql_credentials:
   database: huskrtp
   params: '?autoReconnect=true&useSSL=false'
   player_table_name: huskrtp_players
+  connection_pool_options:
+    maximum_pool_size: 10
+    minimum_idle: 10
+    maximum_lifetime: 1800000
+    keepalive_time: 0
+    connection_timeout: 5000
 redis_credentials:
   host: localhost
   port: 6379

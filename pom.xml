@@ -112,14 +112,14 @@
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
-            <version>3.6.3</version>
+            <version>3.7.1</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>biz.donvi</groupId>
             <artifactId>JakesRTP</artifactId>
-            <version>0.14.3</version>
+            <version>0.14.8</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -150,6 +150,12 @@
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>2.2.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>5.0.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

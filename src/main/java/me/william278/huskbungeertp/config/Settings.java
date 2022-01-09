@@ -16,6 +16,12 @@ public class Settings {
     private final String databasePlayerTableName;
     private final String databaseParams;
 
+    private final int hikariMaximumPoolSize;
+    private final int hikariMinimumIdle;
+    private final long hikariMaximumLifetime;
+    private final long hikariKeepAliveTime;
+    private final long hikariConnectionTimeOut;
+
     // Jedis credentials
     private final String redisHost;
     private final int redisPort;
@@ -45,6 +51,12 @@ public class Settings {
         databaseName = config.getString("mysql_credentials.database", "huskrtp");
         databasePlayerTableName = config.getString("mysql_credentials.player_table_name", "huskrtp_players");
         databaseParams = config.getString("mysql_credentials.params", "?autoReconnect=true&useSSL=false");
+
+        hikariMaximumPoolSize = config.getInt("mysql_credentials.connection_pool_options.maximum_pool_size", 10);
+        hikariMinimumIdle = config.getInt("mysql_credentials.connection_pool_options.minimum_idle", 10);
+        hikariMaximumLifetime = config.getLong("mysql_credentials.connection_pool_options.maximum_lifetime", 1800000);
+        hikariKeepAliveTime = config.getLong("mysql_credentials.connection_pool_options.keepalive_time", 0);
+        hikariConnectionTimeOut = config.getLong("mysql_credentials.connection_pool_options.connection_timeout", 5000);
 
         redisHost = config.getString("redis_credentials.host", "localhost");
         redisPort = config.getInt("redis_credentials.port", 3306);
@@ -150,6 +162,26 @@ public class Settings {
 
     public String getServerId() {
         return serverId;
+    }
+
+    public int getHikariMaximumPoolSize() {
+        return hikariMaximumPoolSize;
+    }
+
+    public int getHikariMinimumIdle() {
+        return hikariMinimumIdle;
+    }
+
+    public long getHikariMaximumLifetime() {
+        return hikariMaximumLifetime;
+    }
+
+    public long getHikariKeepAliveTime() {
+        return hikariKeepAliveTime;
+    }
+
+    public long getHikariConnectionTimeOut() {
+        return hikariConnectionTimeOut;
     }
 
     public HashSet<String> getAllServerIds() {
