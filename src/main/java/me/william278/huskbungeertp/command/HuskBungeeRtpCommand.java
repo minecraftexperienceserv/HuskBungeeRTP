@@ -20,7 +20,7 @@ public class HuskBungeeRtpCommand implements CommandExecutor {
     private static final StringBuilder PLUGIN_INFORMATION = new StringBuilder()
             .append("[HuskBungeeRTP](#00fb9a bold) [| Version ").append(plugin.getDescription().getVersion()).append("](#00fb9a)\n")
             .append("[").append(plugin.getDescription().getDescription()).append("](gray)\n")
-            .append("[• Author:](white) [William278](gray show_text=&7Click to pay a visit open_url=https://youtube.com/William27528)\n")
+            .append("[• Author:](white) [William278](gray show_text=&7Click to visit website open_url=https://william278.net)\n")
             .append("[• Support Discord:](white) [[Link]](#00fb9a show_text=&7Click to join open_url=https://discord.gg/tVYhJfyDWG)");
 
 
