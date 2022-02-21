@@ -6,7 +6,7 @@
 
     <groupId>me.William278</groupId>
     <artifactId>HuskBungeeRTP</artifactId>
-    <version>1.1</version>
+    <version>1.1.1</version>
     <packaging>jar</packaging>
 
     <name>HuskBungeeRTP</name>
@@ -16,6 +16,7 @@
     <properties>
         <java.version>16</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jedis.version>3.7.1</jedis.version>
     </properties>
 
     <pluginRepositories>
@@ -50,20 +51,24 @@
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                             <relocations>
                                 <relocation>
-                                    <pattern>redis.clients.jedis</pattern>
-                                    <shadedPattern>me.william278.huskbungeertp.libraries.jedis</shadedPattern>
+                                    <pattern>org.jetbrains</pattern>
+                                    <shadedPattern>me.william278.huskbungeertp.libraries.annotations</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>de.themoep.minedown</pattern>
-                                    <shadedPattern>me.william278.huskbungeertp.libraries.minedown</shadedPattern>
+                                    <pattern>com.zaxxer</pattern>
+                                    <shadedPattern>me.william278.huskbungeertp.libraries.hikaricp</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>io.papermc.lib</pattern>
+                                    <pattern>io.papermc</pattern>
                                     <shadedPattern>me.william278.huskbungeertp.libraries.paperlib</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.bstats</pattern>
                                     <shadedPattern>me.william278.huskbungeertp.libraries.bstats</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>de.themoep</pattern>
+                                    <shadedPattern>me.william278.huskbungeertp.libraries.minedown</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -110,16 +115,28 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>3.7.1</version>
-            <type>jar</type>
-            <scope>compile</scope>
+            <groupId>com.github.WiIIiam278</groupId>
+            <artifactId>HuskHomes2</artifactId>
+            <version>2.8.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.plan-player-analytics</groupId>
+            <artifactId>Plan</artifactId>
+            <version>5.4.1366</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>biz.donvi</groupId>
             <artifactId>JakesRTP</artifactId>
             <version>0.14.8</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>${jedis.version}</version>
+            <type>jar</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -135,27 +152,15 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.WiIIiam278</groupId>
-            <artifactId>HuskHomes2</artifactId>
-            <version>2.8.2</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.plan-player-analytics</groupId>
-            <artifactId>Plan</artifactId>
-            <version>5.4.1366</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>2.2.1</version>
+            <version>3.0.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>5.0.0</version>
+            <version>5.0.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
