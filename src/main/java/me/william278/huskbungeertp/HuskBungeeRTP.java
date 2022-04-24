@@ -9,14 +9,10 @@ import me.william278.huskbungeertp.jedis.RedisMessenger;
 import me.william278.huskbungeertp.mysql.DataHandler;
 import me.william278.huskbungeertp.randomtp.processor.AbstractRtp;
 import me.william278.huskbungeertp.randomtp.processor.DefaultRtp;
-<<<<<<< Updated upstream
-import me.william278.huskbungeertp.randomtp.processor.JakesRtp;
 import net.milkbowl.vault.economy.Economy;
-import org.bstats.bukkit.Metrics;
-import org.bstats.charts.SimplePie;
+
 import org.bukkit.Bukkit;
-=======
->>>>>>> Stashed changes
+
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
