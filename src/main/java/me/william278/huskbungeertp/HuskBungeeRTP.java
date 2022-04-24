@@ -155,7 +155,7 @@ public final class HuskBungeeRTP extends JavaPlugin {
 
         // Economy Manager
         if(!setupEconomy()) {
-            rtpLogger.severe("Vault not found");
+            getLogger().severe("Vault not found");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
