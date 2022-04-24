@@ -5,15 +5,12 @@ import me.william278.huskbungeertp.command.RtpCommand;
 import me.william278.huskbungeertp.config.Group;
 import me.william278.huskbungeertp.config.Settings;
 import me.william278.huskbungeertp.jedis.RedisMessage;
-import me.william278.huskbungeertp.plan.PlanDataManager;
 import me.william278.huskbungeertp.jedis.RedisMessenger;
 import me.william278.huskbungeertp.mysql.DataHandler;
 import me.william278.huskbungeertp.randomtp.processor.AbstractRtp;
 import me.william278.huskbungeertp.randomtp.processor.DefaultRtp;
-import me.william278.huskbungeertp.randomtp.processor.JakesRtp;
 import net.milkbowl.vault.economy.Economy;
-import org.bstats.bukkit.Metrics;
-import org.bstats.charts.SimplePie;
+
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -93,11 +90,7 @@ public final class HuskBungeeRTP extends JavaPlugin {
     }
 
     private void setAbstractRtp() {
-        if (Bukkit.getPluginManager().getPlugin("JakesRTP") != null) {
-            abstractRtp = new JakesRtp();
-        } else {
-            abstractRtp = new DefaultRtp();
-        }
+        abstractRtp = new DefaultRtp();
         abstractRtp.initialize();
     }
 
@@ -153,23 +146,14 @@ public final class HuskBungeeRTP extends JavaPlugin {
         // Register events
         getServer().getPluginManager().registerEvents(new EventListener(), this);
 
-        // Setup plan integration / fetch player counts
+        // fetch player counts
         switch (getSettings().getLoadBalancingMethod()) {
-            case PLAN -> PlanDataManager.updatePlanPlayTimes();
             case PLAYER_COUNTS -> updateServerPlayerCounts();
         }
 
         // Jedis subscriber initialisation
         RedisMessenger.subscribe();
 
-        // bStats initialisation
-        try {
-            Metrics metrics = new Metrics(this, METRICS_PLUGIN_ID);
-            metrics.addCustomChart(new SimplePie("plan_integration", () -> Boolean.toString(PlanDataManager.usePlanIntegration())));
-            metrics.addCustomChart(new SimplePie("jakes_rtp", () -> Boolean.toString(abstractRtp instanceof JakesRtp)));
-        } catch (Exception e) {
-            getLogger().warning("An exception occurred initialising metrics; skipping.");
-        }
 
         // Setup debug logger
         if (getSettings().doDebugLogging()) {
