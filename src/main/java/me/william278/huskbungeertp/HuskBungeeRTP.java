@@ -11,10 +11,12 @@ import me.william278.huskbungeertp.mysql.DataHandler;
 import me.william278.huskbungeertp.randomtp.processor.AbstractRtp;
 import me.william278.huskbungeertp.randomtp.processor.DefaultRtp;
 import me.william278.huskbungeertp.randomtp.processor.JakesRtp;
+import net.milkbowl.vault.economy.Economy;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -32,6 +34,11 @@ public final class HuskBungeeRTP extends JavaPlugin {
     private static final int METRICS_PLUGIN_ID = 12830;
 
     private static HuskBungeeRTP instance;
+
+	private static RegisteredServiceProvider<Economy> economy = Bukkit.getServer().getServicesManager()
+			.getRegistration(Economy.class);
+		
+    public static Economy econ = economy.getProvider();
 
     public static HuskBungeeRTP getInstance() {
         return instance;
