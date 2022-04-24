@@ -63,10 +63,6 @@
                                     <shadedPattern>me.william278.huskbungeertp.libraries.paperlib</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>org.bstats</pattern>
-                                    <shadedPattern>me.william278.huskbungeertp.libraries.bstats</shadedPattern>
-                                </relocation>
-                                <relocation>
                                     <pattern>de.themoep</pattern>
                                     <shadedPattern>me.william278.huskbungeertp.libraries.minedown</shadedPattern>
                                 </relocation>
@@ -149,6 +145,11 @@
             <artifactId>HikariCP</artifactId>
             <version>5.0.1</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.MilkBowl</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.7</version>
         </dependency>
     </dependencies>
 </project>
