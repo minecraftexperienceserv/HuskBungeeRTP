@@ -73,10 +73,6 @@ public class RtpCommand implements CommandExecutor {
         }
 
 		final double payment = config.getDouble("payments.payment");
-		final String account = economy.getBanks()
-				.stream()
-				.filter(o -> o.equals(targetPlayer.getName()))
-				.collect(Collectors.joining());
        
         if (targetBiome == null) {
             if(economy.has(Bukkit.getPlayer(targetPlayer.getName()),payment)) {
