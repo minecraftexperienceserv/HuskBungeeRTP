@@ -9,12 +9,22 @@ import me.william278.huskbungeertp.jedis.RedisMessenger;
 import me.william278.huskbungeertp.mysql.DataHandler;
 import me.william278.huskbungeertp.randomtp.processor.AbstractRtp;
 import me.william278.huskbungeertp.randomtp.processor.DefaultRtp;
+<<<<<<< Updated upstream
 import net.milkbowl.vault.economy.Economy;
 
+=======
+<<<<<<< HEAD
+import me.william278.huskbungeertp.randomtp.processor.JakesRtp;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
+=======
+import net.milkbowl.vault.economy.Economy;
+
+>>>>>>> 221eb7cd87737bf9ebfee126807f1d9e8e8a7a25
+>>>>>>> Stashed changes
 import org.bukkit.Bukkit;
 
 import org.bukkit.configuration.Configuration;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -29,11 +39,6 @@ import java.util.logging.SimpleFormatter;
 public final class HuskBungeeRTP extends JavaPlugin {
 
     private static HuskBungeeRTP instance;
-
-	private static RegisteredServiceProvider<Economy> economy = Bukkit.getServer().getServicesManager()
-			.getRegistration(Economy.class);
-		
-    public static Economy econ = economy.getProvider();
 
     public static HuskBungeeRTP getInstance() {
         return instance;

@@ -44,8 +44,3 @@ groups:
     servers_worlds:
       server3:
         - worldcustomgen
-
-# natrium update
-payments:
-  payment: 2000 # default
-  noMoney: "&cNon hai abbastanza soldi per quello!"
