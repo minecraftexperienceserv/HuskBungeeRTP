@@ -29,6 +29,10 @@ public final class HuskBungeeRTP extends JavaPlugin {
 
     private static HuskBungeeRTP instance;
 
+    private static RegisteredServiceProvider<Economy> rsp = null;
+
+    public static Economy economy = null;
+
     public static HuskBungeeRTP getInstance() {
         return instance;
     }
@@ -87,7 +91,6 @@ public final class HuskBungeeRTP extends JavaPlugin {
     private void setupLogger() {
         rtpLogger = Logger.getLogger("RTPLogger");
         FileHandler loggerFile;
-
         try {
             loggerFile = new FileHandler(getDataFolder().getAbsolutePath() + File.separator + "RTPLogger.log");
             rtpLogger.addHandler(loggerFile);
@@ -127,6 +130,7 @@ public final class HuskBungeeRTP extends JavaPlugin {
         // Set RTP handler
         setAbstractRtp();
 
+
         // Register command
         Objects.requireNonNull(getCommand("rtp")).setExecutor(new RtpCommand());
         Objects.requireNonNull(getCommand("rtp")).setTabCompleter(new RtpCommand.RtpTabCompleter());
@@ -144,14 +148,32 @@ public final class HuskBungeeRTP extends JavaPlugin {
         // Jedis subscriber initialisation
         RedisMessenger.subscribe();
 
-
         // Setup debug logger
         if (getSettings().doDebugLogging()) {
             setupLogger();
         }
 
+        // Economy Manager
+        if(!setupEconomy()) {
+            rtpLogger.severe("Vault not found");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
         // Log to console
         getLogger().info("Successfully enabled HuskBungeeRTP v" + getDescription().getVersion());
+    }
+
+    private boolean setupEconomy() {
+        if(getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if(Objects.equals(rsp,null)) {
+            return false;
+        }
+        economy = rsp.getProvider();
+        return true;
     }
 
     @Override

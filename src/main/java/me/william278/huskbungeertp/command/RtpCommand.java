@@ -5,14 +5,12 @@ import me.william278.huskbungeertp.MessageManager;
 import me.william278.huskbungeertp.config.Group;
 import me.william278.huskbungeertp.randomtp.RtpHandler;
 import me.william278.huskbungeertp.randomtp.RtpProfile;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Biome;
 import org.bukkit.command.*;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
@@ -20,15 +18,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static me.william278.huskbungeertp.HuskBungeeRTP.economy;
+
 public class RtpCommand implements CommandExecutor {
 
     Configuration config = Bukkit.getServer().getPluginManager()
             .getPlugin(HuskBungeeRTP.getInstance().getDescription().getName()).getConfig();
-
-    RegisteredServiceProvider<Economy> rsp = Bukkit.getServer().getServicesManager()
-            .getRegistration(Economy.class);
-
-    Economy econ = rsp.getProvider();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -78,15 +73,15 @@ public class RtpCommand implements CommandExecutor {
         }
 
 		final double payment = config.getDouble("payments.payment");
-		final double balance = econ.getBalance(targetPlayer);
-		final String account = econ.getBanks()
+		final double balance = economy.getBalance(targetPlayer);
+		final String account = economy.getBanks()
 				.stream()
 				.filter(o -> o.equals(targetPlayer.getName()))
 				.collect(Collectors.joining());
        
         if (targetBiome == null) {
             if(balance >= payment) {
-                econ.bankWithdraw(account,payment);
+                economy.bankWithdraw(account,payment);
                 RtpHandler.processRtp(targetPlayer, new RtpProfile(targetGroup));
             }
             else {
@@ -94,7 +89,7 @@ public class RtpCommand implements CommandExecutor {
             }
         } else {
             if(balance >= payment) {
-            	econ.bankWithdraw(account,payment);
+            	economy.bankWithdraw(account,payment);
                 RtpHandler.processRtp(targetPlayer, new RtpProfile(targetGroup,targetBiome));
             }
             else {

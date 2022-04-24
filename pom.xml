@@ -146,10 +146,5 @@
             <version>5.0.1</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.github.MilkBowl</groupId>
-            <artifactId>VaultAPI</artifactId>
-            <version>1.7</version>
-        </dependency>
     </dependencies>
 </project>

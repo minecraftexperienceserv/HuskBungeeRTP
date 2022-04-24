@@ -9,6 +9,7 @@ libraries:
   - 'redis.clients:jedis:${jedis.version}'
 depend:
   - HuskHomes
+  - Vault
 
 commands:
   rtp:
