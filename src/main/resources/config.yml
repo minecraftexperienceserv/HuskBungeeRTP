@@ -44,3 +44,9 @@ groups:
     servers_worlds:
       server3:
         - worldcustomgen
+
+# Payment config
+# Always add decimals example: 2000.00
+payments:
+  payment: 0
+  noMoney: "&cNon hai abbastanza soldi! :c"

@@ -6,16 +6,24 @@ import me.william278.huskbungeertp.config.Group;
 import me.william278.huskbungeertp.randomtp.RtpHandler;
 import me.william278.huskbungeertp.randomtp.RtpProfile;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.block.Biome;
 import org.bukkit.command.*;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static me.william278.huskbungeertp.HuskBungeeRTP.econ;
 
 public class RtpCommand implements CommandExecutor {
+
+    Configuration config = Bukkit.getServer().getPluginManager()
+            .getPlugin(HuskBungeeRTP.getInstance().getDescription().getName()).getConfig();
 
     // Command syntax: /rtp [player] [group] [biome]
     @Override
@@ -64,10 +72,30 @@ public class RtpCommand implements CommandExecutor {
         if (targetPlayer != sender) {
             MessageManager.sendMessage(sender, "randomly_teleporting_player", targetPlayer.getName());
         }
+
+		final double payment = config.getDouble("payments.payment");
+		final double balance = econ.getBalance(targetPlayer);
+		final String account = econ.getBanks()
+				.stream()
+				.filter(o -> o.equals(targetPlayer.getName()))
+				.collect(Collectors.joining());
+       
         if (targetBiome == null) {
-            RtpHandler.processRtp(targetPlayer, new RtpProfile(targetGroup));
+            if(balance >= payment) {
+                econ.bankWithdraw(account,payment);
+                RtpHandler.processRtp(targetPlayer, new RtpProfile(targetGroup));
+            }
+            else {
+                targetPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString("payments.noMoney")));
+            }
         } else {
-            RtpHandler.processRtp(targetPlayer, new RtpProfile(targetGroup, targetBiome));
+            if(balance >= payment) {
+            	econ.bankWithdraw(account,payment);
+                RtpHandler.processRtp(targetPlayer, new RtpProfile(targetGroup,targetBiome));
+            }
+            else {
+                targetPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString("payments.noMoney")));
+            }
         }
         return true;
     }
