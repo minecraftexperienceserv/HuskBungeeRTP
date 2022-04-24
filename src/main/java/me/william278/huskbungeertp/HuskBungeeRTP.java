@@ -30,13 +30,6 @@ public final class HuskBungeeRTP extends JavaPlugin {
     // Metrics ID for bStats integration
     private static final int METRICS_PLUGIN_ID = 12830;
 
-    private static RegisteredServiceProvider<Economy> economy = Bukkit.getServer().getServicesManager()
-            .getRegistration(Economy.class);
-
-
-    public static Economy econ = economy.getProvider();
-
-
     private static HuskBungeeRTP instance;
 
     public static HuskBungeeRTP getInstance() {
