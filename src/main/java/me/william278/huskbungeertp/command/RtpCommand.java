@@ -73,23 +73,22 @@ public class RtpCommand implements CommandExecutor {
         }
 
 		final double payment = config.getDouble("payments.payment");
-		final double balance = economy.getBalance(targetPlayer);
 		final String account = economy.getBanks()
 				.stream()
 				.filter(o -> o.equals(targetPlayer.getName()))
 				.collect(Collectors.joining());
        
         if (targetBiome == null) {
-            if(balance >= payment) {
-                economy.bankWithdraw(account,payment);
+            if(economy.has(Bukkit.getPlayer(targetPlayer.getName()),payment)) {
+                economy.withdrawPlayer(targetPlayer,payment);
                 RtpHandler.processRtp(targetPlayer, new RtpProfile(targetGroup));
             }
             else {
                 targetPlayer.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getString("payments.noMoney")));
             }
         } else {
-            if(balance >= payment) {
-            	economy.bankWithdraw(account,payment);
+            if(economy.has(Bukkit.getPlayer(targetPlayer.getName()),payment)) {
+            	economy.withdrawPlayer(targetPlayer,payment);
                 RtpHandler.processRtp(targetPlayer, new RtpProfile(targetGroup,targetBiome));
             }
             else {
