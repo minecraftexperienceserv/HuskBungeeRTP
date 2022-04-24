@@ -9,9 +9,6 @@ libraries:
   - 'redis.clients:jedis:${jedis.version}'
 depend:
   - HuskHomes
-softdepend:
-  - JakesRTP
-  - Plan
 
 commands:
   rtp:
@@ -20,7 +17,7 @@ commands:
     permission: huskrtp.command.rtp
     aliases: [brtp, hbrtp, randomtp]
   huskbungeertp:
-    usage: /huskbungeertp <about/groups/plan/playercounts/reload>
+    usage: /huskbungeertp <about/groups/playercounts/reload>
     description: View and manage plugin details
     permission: huskrtp.command.admin
 permissions:

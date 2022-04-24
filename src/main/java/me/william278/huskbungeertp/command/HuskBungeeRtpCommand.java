@@ -5,7 +5,6 @@ import me.william278.huskbungeertp.HuskBungeeRTP;
 import me.william278.huskbungeertp.MessageManager;
 import me.william278.huskbungeertp.config.Group;
 import me.william278.huskbungeertp.config.Settings;
-import me.william278.huskbungeertp.plan.PlanDataManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -48,27 +47,6 @@ public class HuskBungeeRtpCommand implements CommandExecutor {
                         sender.spigot().sendMessage(new MineDown("[" + group.groupId() + "](#00fb9a show_text=&#00fb9a&Group ID) [•](#262626) [" + group.getGroupDatabaseTableName() + "](gray show_text=&#00fb9a&Group database table name) [•](#262626) [⌚" + group.getCoolDownTimeMinutes() + "m](gray show_text=&#00fb9a&Group cooldown time) [•](#262626) [[ⓘ Servers]](white show_text=&#00fb9a&Servers & worlds:\b&f" + joiner + ")").toComponent());
                     }
                 }
-                case "plan" -> {
-                    if (PlanDataManager.usePlanIntegration()) {
-                        HashMap<String, Long> planPlayTimes = PlanDataManager.getPlanPlayTimes();
-                        if (planPlayTimes == null) {
-                            sender.spigot().sendMessage(new MineDown("[Error:](#ff3300) [Failed to retrieve the Plan play times.](#ff7e5e)").toComponent());
-                            return true;
-                        }
-                        if (planPlayTimes.isEmpty()) {
-                            sender.spigot().sendMessage(new MineDown("[Error:](#ff3300) [Could not find any servers correctly configured with Plan!](#ff7e5e)").toComponent());
-                            return true;
-                        }
-
-                        sender.spigot().sendMessage(new MineDown("[HuskBungeeRTP](#00fb9a bold) [| Total Plan play times for servers \\(in ticks, over " + HuskBungeeRTP.getSettings().getPlanAveragePlayerCountDays() + "d\\):](#00fb9a)").toComponent());
-                        for (String serverId : planPlayTimes.keySet()) {
-                            long playTime = planPlayTimes.get(serverId);
-                            sender.spigot().sendMessage(new MineDown("[•](#262626) [" + serverId + ":](#00fb9a show_text=&#00fb9a&ID of the server) [⌚" + playTime + " ticks](white show_text=&#00fb9a&The total play time, in ticks, according to the Plan database)").toComponent());
-                        }
-                    } else {
-                        sender.spigot().sendMessage(new MineDown("[Error:](#ff3300) [The Player Analytics \\(Plan\\) integration is currently disabled.](#ff7e5e)").toComponent());
-                    }
-                }
                 case "playercounts" -> {
                     if (HuskBungeeRTP.getSettings().getLoadBalancingMethod() == Settings.LoadBalancingMethod.PLAYER_COUNTS) {
                         HashMap<String,Integer> playerCounts = HuskBungeeRTP.serverPlayerCounts;
@@ -102,7 +80,7 @@ public class HuskBungeeRtpCommand implements CommandExecutor {
 
     public static class HuskBungeeRtpTabCompleter implements TabCompleter {
 
-        private static final String[] commandTabArgs = {"about", "groups", "plan", "playercounts", "reload"};
+        private static final String[] commandTabArgs = {"about", "groups", "playercounts", "reload"};
 
         @Override
         public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {

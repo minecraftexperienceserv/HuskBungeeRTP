@@ -7,7 +7,6 @@ import me.william278.huskbungeertp.config.Group;
 import me.william278.huskbungeertp.jedis.RedisMessage;
 import me.william278.huskbungeertp.jedis.RedisMessenger;
 import me.william278.huskbungeertp.mysql.DataHandler;
-import me.william278.huskbungeertp.plan.PlanDataManager;
 import me.william278.huskbungeertp.randomtp.processor.AbstractRtp;
 import me.william278.huskhomes2.teleport.points.TeleportationPoint;
 import org.bukkit.Bukkit;
@@ -140,21 +139,6 @@ public class RtpHandler {
     private static Group.Server determineTargetServer(HashSet<Group.Server> servers) {
         final HashSet<Group.Server> possibleTargets = new HashSet<>(servers);
         switch (HuskBungeeRTP.getSettings().getLoadBalancingMethod()) {
-            case PLAN -> {
-                if (PlanDataManager.usePlanIntegration()) {
-                    PlanDataManager.fetchPlanIfNeeded(); // Pull fresh plan data if needed
-                    HashSet<String> targetServerIds = PlanDataManager.getServerIdsWithLowestPlayTime(servers);
-                    possibleTargets.clear();
-                    for (Group.Server server : servers) {
-                        for (String serverId : targetServerIds) {
-                            if (server.getName().equals(serverId)) {
-                                possibleTargets.add(server);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
             case PLAYER_COUNTS -> {
                 HuskBungeeRTP.updateServerPlayerCounts(); // Pull fresh player counts
                 HashSet<String> targetServerIds = HuskBungeeRTP.getServerIdsWithFewestPlayers(servers);

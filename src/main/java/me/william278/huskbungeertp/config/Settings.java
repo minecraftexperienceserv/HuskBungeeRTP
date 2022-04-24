@@ -37,8 +37,6 @@ public class Settings {
 
     // Load Balancing
     private final LoadBalancingMethod loadBalancingMethod;
-    private final int planUpdateFrequencyMinutes;
-    private final int planAveragePlayerCountDays;
 
     // Group configuration
     private final HashSet<Group> groups;
@@ -63,8 +61,6 @@ public class Settings {
         redisPassword = config.getString("redis_credentials.password", "");
 
         loadBalancingMethod = LoadBalancingMethod.valueOf(config.getString("load_balancing.method", "random").toUpperCase());
-        planUpdateFrequencyMinutes = config.getInt("load_balancing.plan.update_frequency_mins", 1);
-        planAveragePlayerCountDays = config.getInt("load_balancing.plan.average_player_count_days", 7);
 
         serverId = config.getString("this_server_id", "server1");
         useLastRtpLocationOnCoolDown = config.getBoolean("last_rtp_on_cooldown", true);
@@ -134,8 +130,6 @@ public class Settings {
 
     public String getRedisPassword() { return redisPassword; }
 
-    public int getPlanUpdateFrequencyMinutes() { return planUpdateFrequencyMinutes; }
-
     public LoadBalancingMethod getLoadBalancingMethod() {
         return loadBalancingMethod;
     }
@@ -144,9 +138,6 @@ public class Settings {
         return getGroupById(defaultRtpDestinationGroup);
     }
 
-    public long getPlanAveragePlayerCountDays() {
-        return planAveragePlayerCountDays;
-    }
 
     public boolean isUseLastRtpLocationOnCoolDown() {
         return useLastRtpLocationOnCoolDown;
@@ -231,7 +222,6 @@ public class Settings {
     }
 
     public enum LoadBalancingMethod {
-        PLAN,
         PLAYER_COUNTS,
         RANDOM
     }
