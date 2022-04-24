@@ -28,9 +28,6 @@ import java.util.logging.SimpleFormatter;
 
 public final class HuskBungeeRTP extends JavaPlugin {
 
-    // Metrics ID for bStats integration
-    private static final int METRICS_PLUGIN_ID = 12830;
-
     private static HuskBungeeRTP instance;
 
 	private static RegisteredServiceProvider<Economy> economy = Bukkit.getServer().getServicesManager()

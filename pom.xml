@@ -121,12 +121,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.github.plan-player-analytics</groupId>
-            <artifactId>Plan</artifactId>
-            <version>5.4.1366</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
             <version>${jedis.version}</version>
@@ -143,12 +137,6 @@
             <groupId>io.papermc</groupId>
             <artifactId>paperlib</artifactId>
             <version>1.0.6</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.bstats</groupId>
-            <artifactId>bstats-bukkit</artifactId>
-            <version>3.0.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
