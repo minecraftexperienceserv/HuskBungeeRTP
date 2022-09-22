@@ -23,7 +23,7 @@ public class DefaultRtp extends AbstractRtp {
     ));
 
     // Maximum number of attempts to find a random location
-    public static final int RADIUS = 5000;
+    public static final int RADIUS = 15000;
 
     @Override
     public void initialize() {}
